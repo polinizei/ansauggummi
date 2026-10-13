@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<title>Ansauggummi Konfigurator</title>
+<!-- XAG Konfigurator v0.6.1 (Mockup) | 2026-10-13 | _personal/xyger/ansauggummi/konfigurator.html -->
+<style>
+  :root{
+    --bg:#f4f5f7; --card:#ffffff; --ink:#1b1f24; --muted:#6b7280; --line:#e2e5ea;
+    --accent:#0f766e; --accent-ink:#ffffff; --soft:#e6f4f2;
+    --fill:#d9dde3; --stroke:#2b3440; --ghost:#8b95a3; --dim:#0f766e; --dimq:#aab2bd; --body:#e9ecf0; --hatch:#c3c9d1;
+  }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+    --bg:#0f1115; --card:#181b21; --ink:#e8eaee; --muted:#9aa3ad; --line:#2a2f38;
+    --accent:#2dd4bf; --accent-ink:#06201c; --soft:#12302c;
+    --fill:#3a414b; --stroke:#dfe3e8; --ghost:#6b7280; --dim:#2dd4bf; --dimq:#4b5563; --body:#22272f; --hatch:#3a414b;
+  }}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:560px;margin:0 auto;padding:16px 16px 32px;display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+  .wrap>*{min-width:0}
+  .card{min-width:0;overflow:hidden}
+  .preview{position:sticky;top:0;z-index:3;background:var(--bg);padding:6px 0 2px}
+  .preview svg{margin:0;border:1px solid var(--line)}
+  @media(min-width:900px){ .wrap{max-width:1040px;grid-template-columns:minmax(0,460px) minmax(0,1fr);align-items:start;column-gap:24px}
+    .wrap>.top,.wrap>.steps{grid-column:1/-1} .preview{grid-column:2;grid-row:3/span 8;position:sticky;top:16px;padding:0} .card,.nav{grid-column:1} }
+  .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  h1{font-size:20px;margin:0}
+  .lang{display:flex;gap:4px}
+  .lang button{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:8px;padding:4px 8px;font-size:12px;font-weight:600;cursor:pointer;min-height:32px}
+  .lang button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+  .steps{display:flex;gap:6px}
+  .steps span{flex:1;height:4px;border-radius:2px;background:var(--line)}
+  .steps span.on{background:var(--accent)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .card h2{font-size:17px;margin:0 0 2px}
+  .card p.sub{margin:0 0 12px;color:var(--muted);font-size:14px}
+  svg{width:100%;max-width:100%;height:auto;display:block;margin:4px 0 8px;background:var(--bg);border-radius:10px}
+  svg text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:11px}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+  .row:first-child{border-top:0}
+  .row label{font-size:15px}
+  .row small{display:block;color:var(--muted);font-size:12px}
+  .step{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .step button{width:40px;height:40px;border:0;background:transparent;color:var(--ink);font-size:20px;cursor:pointer}
+  .step button:disabled{opacity:.3}
+  .step input.val{width:76px;border:0;background:transparent;color:var(--ink);text-align:center;font:inherit;font-weight:600;font-variant-numeric:tabular-nums;min-height:40px;padding:0}
+  .step input.val:focus{outline:2px solid var(--accent);outline-offset:-2px;border-radius:6px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:8px 14px;font-size:14px;cursor:pointer;min-height:40px}
+  .chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+  .nav{display:flex;justify-content:space-between;gap:10px}
+  .btn{border:0;border-radius:12px;padding:12px 18px;font-size:15px;font-weight:600;cursor:pointer;min-height:44px}
+  .btn.primary{background:var(--accent);color:var(--accent-ink)}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+  .btn:disabled{opacity:.3}
+  .summary{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;white-space:pre-wrap;background:var(--bg);border-radius:10px;padding:12px;margin:0 0 12px}
+  input[type=text]{width:100%;min-height:40px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);padding:8px 10px;font-size:15px;margin-top:8px}
+  .hint{color:var(--muted);font-size:13px;margin:8px 0 0}
+  .grp{margin:0 0 12px}
+  .grp small{display:block;color:var(--muted);font-size:12px;margin:0 0 6px}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><h1 data-i="title"></h1><div class="lang" id="lang"><button data-l="de">DE</button><button data-l="en">EN</button><button data-l="it">IT</button></div></div>
+  <div class="steps" id="steps"></div>
+  <div class="preview" id="preview"><svg id="sk1" viewBox="0 0 360 300" role="img"></svg><svg id="sk3" viewBox="0 0 360 240" role="img"></svg><svg id="sk4" viewBox="0 0 360 240" role="img"></svg></div>
+
+  <!-- Schritt 0: Vergaser + Ansaugstutzen -->
+  <section class="card" data-step="0">
+    <h2 data-i="s0h"></h2>
+    <p class="sub" data-i="s0p"></p>
+    <div class="grp"><small data-i="carbSel"></small><div class="chips" id="carbM"></div></div>
+    <div class="grp" id="carbRwrap"><small data-i="series"></small><div class="chips" id="carbR"></div></div>
+    <div class="grp"><small data-i="size"></small><div class="chips" id="carbS"></div></div>
+    <div class="grp"><small data-i="stSel"></small><div class="chips" id="stM"></div></div>
+    <div class="grp" id="stVwrap"><small data-i="model"></small><div class="chips" id="stV"></div></div>
+    <p class="hint" id="pairInfo"></p>
+  </section>
+
+  <!-- Schritt 1 / 2: Stutzen messen -->
+  <section class="card" data-step="1">
+    <h2 id="sideTitle"></h2>
+    <p class="sub" id="sideSub"></p>
+    <div id="mirrorRow" class="row" hidden><label><span data-i="mirror"></span><small data-i="mirrorS"></small></label><div class="chips" data-k="mirror"><button class="chip" data-v="1" data-i="yes"></button><button class="chip" data-v="0" data-i="no"></button></div></div>
+    <div id="sideFields">
+      <div class="row"><label data-i="d"></label><div class="step" data-k="d" data-s="0.1"><button>−</button><input class="val" type="text" inputmode="decimal"><button>+</button></div></div>
+      <div class="row"><label><span data-i="len"></span><small data-i="lenS"></small></label><div class="step" data-k="len" data-s="0.5"><button>−</button><input class="val" type="text" inputmode="decimal"><button>+</button></div></div>
+      <div class="row"><label data-i="nf"></label><div class="chips" data-k="nf"><button class="chip" data-v="0" data-i="nf0"></button><button class="chip" data-v="1" data-i="nf1"></button><button class="chip" data-v="2" data-i="nf2"></button></div></div>
+      <div class="nut">
+        <div class="row"><label data-i="nn"></label><div class="chips" data-k="nn"><button class="chip" data-v="1">1</button><button class="chip" data-v="2">2</button></div></div>
+        <div class="row"><label><span data-i="np"></span><small data-i="npS"></small></label><div class="step" data-k="np" data-s="0.1"><button>−</button><input class="val" type="text" inputmode="decimal"><button>+</button></div></div>
+        <div class="row"><label data-i="nw"></label><div class="step" data-k="nw" data-s="0.1"><button>−</button><input class="val" type="text" inputmode="decimal"><button>+</button></div></div>
+        <div class="row"><label data-i="nd"></label><div class="step" data-k="nd" data-s="0.1"><button>−</button><input class="val" type="text" inputmode="decimal"><button>+</button></div></div>
+        <div class="row nut2"><label><span data-i="ng"></span><small data-i="ngS"></small></label><div class="step" data-k="ng" data-s="0.1"><button>−</button><input class="val" type="text" inputmode="decimal"><button>+</button></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Schritt 3: Einbau -->
+  <section class="card" data-step="3">
+    <h2 data-i="s3h"></h2>
+    <p class="sub" data-i="s3p"></p>
+    <div class="row"><label><span data-i="gap"></span><small data-i="gapS"></small></label><div class="step" data-k="gap" data-s="0.5"><button>−</button><input class="val" type="text" inputmode="decimal"><button>+</button></div></div>
+    <div class="row"><label data-i="ang"></label><div class="chips" data-k="ang"><button class="chip" data-v="0" data-i="straight"></button><button class="chip" data-v="7.5">7,5°</button><button class="chip" data-v="19">19°</button><button class="chip" data-v="free" data-i="free"></button></div></div>
+    <div class="row" id="angFreeRow" hidden><label data-i="angFree"></label><div class="step" data-k="angFree" data-s="0.5"><button>−</button><input class="val" type="text" inputmode="decimal"><button>+</button></div></div>
+  </section>
+
+  <!-- Schritt 4: Gummi -->
+  <section class="card" data-step="4">
+    <h2 data-i="s4h"></h2>
+    <p class="sub" data-i="s4p"></p>
+    <div class="row"><label><span data-i="bore"></span><small data-i="boreS"></small></label><div class="step" data-k="bore" data-s="0.1"><button>−</button><input class="val" type="text" inputmode="decimal"><button>+</button></div></div>
+    <div class="row"><label data-i="boreShape"></label><div class="chips" data-k="shape"><button class="chip" data-v="0" data-i="round"></button><button class="chip" data-v="1" data-i="heart"></button></div></div>
+    <p class="hint" id="boreInfo"></p>
+    <div class="row"><label><span data-i="hard"></span><small data-i="hardS"></small></label><div class="chips" data-k="hard"><button class="chip" data-v="0" data-i="soft"></button><button class="chip" data-v="1" data-i="hardV"></button></div></div>
+    <div class="row"><label data-i="clamp"></label><div class="chips" data-k="clamp"><button class="chip" data-v="0" data-i="narrow"></button><button class="chip" data-v="1" data-i="wide"></button></div></div>
+  </section>
+
+  <!-- Schritt 5: Senden -->
+  <section class="card" data-step="5">
+    <h2 data-i="s5h"></h2>
+    <p class="sub" data-i="s5p"></p>
+    <input type="text" id="name" data-ph="name">
+    <input type="text" id="bike" data-ph="bike">
+    <input type="text" id="note" data-ph="note">
+    <div style="height:12px"></div>
+    <pre class="summary" id="summary"></pre>
+    <div class="chips"><button class="btn primary" id="copy" data-i="copy"></button></div>
+    <p class="hint" data-i="hint"></p>
+  </section>
+
+  <div class="nav"><button class="btn ghost" id="back" data-i="back"></button><button class="btn primary" id="next"></button></div>
+  <p class="hint" style="text-align:center"><a href="impressum.html" data-i="imprint" style="color:var(--muted)"></a></p>
+</div>
+
+<script>
+const STEPS = 6;               // 0 Vorlage, 1 Vergaser, 2 Motor, 3 Einbau, 4 Gummi, 5 Senden
+const WALL = [5, 6.5], CLAMP = [9, 12], LIP = {w:1.5, h:0.55}; // Endwulst Breite, Schellennut-Tiefe
+const BEND_MARGIN = 5.5; // gerade Endstücke, Biegezone dazwischen (SolidWorks Flex: Trimmebenen ±16,5 bei L=44)
+
+// ---------- Sprachen ----------
+const T = {
+de:{ imprint:"Impressum · Datenschutz", bore:"Durchlass-Ø", boreS:"engste Stelle im Gummi, beim SmartCarb die größte messbare Höhe am Austritt", boreShape:"Durchlass-Form", round:"rund", heart:"Herzblatt", boreSC:"SmartCarb: Der Austritt ist herzblattförmig (einseitig gequetscht). Wir fertigen den Durchlass rund mit dem größten messbaren Durchmesser. Die Austrittskanten bleiben dadurch bewusst frei und wirken als Abrisskanten: Der Kraftstofffilm an der Wand reißt ab und zerstäubt. Ein herzblattförmiger Durchlass würde die Kanten abdecken, müsste exakt zum Vergaser ausgerichtet werden und wäre nicht mehr frei verdrehbar.", boreHeart:"Herzblatt-Form nur auf Anfrage, wir melden uns dazu.",carbSel:"Vergaser", series:"Reihe", size:"Größe", stSel:"Ansaugstutzen", model:"Modell", other:"Sonstiger", pairOk:"Vorlage geladen, du misst nur, was abweicht.", pairNone:"Für diese Paarung liegt noch keine Vorlage vor, bitte alles messen.", title:"Ansauggummi konfigurieren", s0h:"Womit fangen wir an?", s0p:"Vergaser und Ansaugstutzen antippen. Winkel kommt später.", own:"Eigene Maße",
+  s1h:"Vergaserstutzen messen", s1p:"Messschieber am Stutzen des Vergasers, auf 0,1 mm.", s2h:"Ansaugstutzen messen", s2p:"Messschieber am Ansaugstutzen des Motors, auf 0,1 mm.",
+  mirror:"Wie Vergaserstutzen", mirrorS:"gleiche Maße auf der Motorseite", yes:"ja", no:"nein", d:"Außen-Ø", len:"Stutzenlänge", lenS:"vom Ende bis zum Anschlag",
+  nf:"Nut am Stutzen", nf0:"keine", nf1:"halbrund", nf2:"eckig", nn:"Anzahl", np:"Lage", npS:"Stutzenende bis Nutanfang", nw:"Breite", nd:"Tiefe", ng:"Abstand zur 2. Nut", ngS:"Nutende bis nächster Nutanfang",
+  s3h:"Einbaulage", s3p:"Wie weit liegen Vergaser und Ansaugstutzen auseinander, und in welchem Winkel?", gap:"Abstand", gapS:"Stutzenende zu Stutzenende", ang:"Winkel", straight:"gerade", free:"frei", angFree:"Winkel frei",
+  s4h:"Dein Verbindungsgummi", s4p:"Längsschnitt, Stutzen gestrichelt eingesteckt. Dichtlippen greifen in deine Nuten, außen die Schellennuten.", hard:"Härte", hardS:"weich = dünnere Wand, hart = dickere Wand", soft:"weich", hardV:"hart", clamp:"Schellenbreite", narrow:"schmal", wide:"breit",
+  s5h:"Anfrage senden", s5p:"Prüfe die Zusammenfassung, kopiere den Text und schicke ihn per WhatsApp.", name:"Name", bike:"Fahrzeug / Motor / Vergaser", note:"Hinweis (optional)", send:"Per WhatsApp senden", copy:"Text kopieren",
+  hint:"Bitte ein Foto vom Stutzen mit Messschieber mitschicken. Druck-Übermaß und Toleranzen rechnen wir.", back:"Zurück", next:"Weiter", toReq:"Zur Anfrage",
+  carb:"Vergaser", motor:"Motor", total:"Gesamtlänge", totalG:"Gesamtlänge Gummi", sumH:"Ansauggummi-Anfrage", sumA:"Vergaserstutzen", sumB:"Ansaugstutzen", sumLen:"Länge", sumNut:"Nut", sumPos:"Lage", sumW:"Breite", sumD:"Tiefe", sumGap:"Abstand", sumAng:"Winkel", sumClamp:"Schelle", sumName:"Name", sumBike:"Fahrzeug", sumNote:"Hinweis",
+  copied:"Text kopiert.", copyFail:"Kopieren nicht möglich, bitte Text markieren.", noWa:"Mockup: WhatsApp-Nummer noch nicht hinterlegt." },
+en:{ imprint:"Legal notice · Privacy", bore:"Bore Ø", boreS:"narrowest point in the rubber; on a SmartCarb the largest measurable height at the outlet", boreShape:"Bore shape", round:"round", heart:"heart-shaped", boreSC:"SmartCarb: the outlet is heart-shaped (flattened on one side). We make the bore round with the largest measurable diameter. The outlet edges stay deliberately exposed and act as tear-off edges: the fuel film on the wall breaks away and atomises. A heart-shaped bore would cover those edges, would need exact alignment to the carburettor and the rubber could no longer be rotated freely.", boreHeart:"Heart-shaped bore on request only, we will get back to you.",carbSel:"Carburettor", series:"Series", size:"Size", stSel:"Intake manifold", model:"Model", other:"Other", pairOk:"Template loaded, only measure what differs.", pairNone:"No template for this pairing yet, please measure everything.", title:"Configure intake rubber", s0h:"Where do we start?", s0p:"Tap your carburettor and intake manifold. Angle comes later.", own:"Custom dimensions",
+  s1h:"Measure carburettor spigot", s1p:"Calipers on the carburettor spigot, to 0.1 mm.", s2h:"Measure intake manifold spigot", s2p:"Calipers on the engine's intake spigot, to 0.1 mm.",
+  mirror:"Same as carburettor spigot", mirrorS:"identical dimensions on the engine side", yes:"yes", no:"no", d:"Outer Ø", len:"Spigot length", lenS:"from the end to the stop",
+  nf:"Groove on spigot", nf0:"none", nf1:"round", nf2:"square", nn:"Count", np:"Position", npS:"spigot end to groove edge", nw:"Width", nd:"Depth", ng:"Distance to 2nd groove", ngS:"groove end to next groove edge",
+  s3h:"Fitting position", s3p:"How far apart are carburettor and manifold, and at what angle?", gap:"Gap", gapS:"spigot end to spigot end", ang:"Angle", straight:"straight", free:"custom", angFree:"Custom angle",
+  s4h:"Your connecting rubber", s4p:"Longitudinal section, spigots shown dashed. Sealing lips engage your grooves, clamp grooves on the outside.", hard:"Hardness", hardS:"soft = thinner wall, hard = thicker wall", soft:"soft", hardV:"hard", clamp:"Clamp width", narrow:"narrow", wide:"wide",
+  s5h:"Send request", s5p:"Check the summary, copy the text and send it via WhatsApp.", name:"Name", bike:"Vehicle / engine / carburettor", note:"Note (optional)", send:"Send via WhatsApp", copy:"Copy text",
+  hint:"Please attach a photo of the spigot with calipers. Print oversize and tolerances are on us.", back:"Back", next:"Next", toReq:"To request",
+  carb:"Carburettor", motor:"Engine", total:"Overall length", totalG:"Rubber overall length", sumH:"Intake rubber request", sumA:"Carburettor spigot", sumB:"Intake spigot", sumLen:"length", sumNut:"groove", sumPos:"position", sumW:"width", sumD:"depth", sumGap:"Gap", sumAng:"angle", sumClamp:"clamp", sumName:"Name", sumBike:"Vehicle", sumNote:"Note",
+  copied:"Text copied.", copyFail:"Copy failed, please select the text.", noWa:"Mockup: WhatsApp number not set yet." },
+it:{ imprint:"Note legali · Privacy", bore:"Ø passaggio", boreS:"punto più stretto nel manicotto; sullo SmartCarb l'altezza massima misurabile all'uscita", boreShape:"Forma del passaggio", round:"tondo", heart:"a cuore", boreSC:"SmartCarb: l'uscita è a forma di cuore (schiacciata su un lato). Realizziamo il passaggio tondo con il diametro massimo misurabile. I bordi dell'uscita restano volutamente liberi e agiscono da spigoli di distacco: il film di carburante sulla parete si stacca e si nebulizza. Un passaggio a cuore coprirebbe quei bordi, richiederebbe un allineamento esatto al carburatore e il manicotto non sarebbe più orientabile liberamente.", boreHeart:"Forma a cuore solo su richiesta, ti ricontattiamo.",carbSel:"Carburatore", series:"Serie", size:"Misura", stSel:"Collettore di aspirazione", model:"Modello", other:"Altro", pairOk:"Modello caricato, misura solo ciò che differisce.", pairNone:"Nessun modello per questo abbinamento, misura tutto.", title:"Configura il manicotto di aspirazione", s0h:"Da dove iniziamo?", s0p:"Tocca il tuo carburatore e il collettore. L'angolo viene dopo.", own:"Misure personalizzate",
+  s1h:"Misura il raccordo del carburatore", s1p:"Calibro sul raccordo del carburatore, al decimo di mm.", s2h:"Misura il raccordo del collettore", s2p:"Calibro sul raccordo di aspirazione del motore, al decimo di mm.",
+  mirror:"Come il raccordo carburatore", mirrorS:"stesse misure lato motore", yes:"sì", no:"no", d:"Ø esterno", len:"Lunghezza raccordo", lenS:"dall'estremità alla battuta",
+  nf:"Gola sul raccordo", nf0:"nessuna", nf1:"tonda", nf2:"quadra", nn:"Numero", np:"Posizione", npS:"da estremità a inizio gola", nw:"Larghezza", nd:"Profondità", ng:"Distanza alla 2ª gola", ngS:"da fine gola a inizio gola successiva",
+  s3h:"Posizione di montaggio", s3p:"Quanto distano carburatore e collettore, e con quale angolo?", gap:"Distanza", gapS:"da estremità a estremità", ang:"Angolo", straight:"dritto", free:"libero", angFree:"Angolo libero",
+  s4h:"Il tuo manicotto", s4p:"Sezione longitudinale, raccordi tratteggiati. I labbri di tenuta entrano nelle tue gole, all'esterno le gole per le fascette.", hard:"Durezza", hardS:"morbido = parete sottile, duro = parete spessa", soft:"morbido", hardV:"duro", clamp:"Larghezza fascetta", narrow:"stretta", wide:"larga",
+  s5h:"Invia richiesta", s5p:"Controlla il riepilogo, copia il testo e invialo via WhatsApp.", name:"Nome", bike:"Veicolo / motore / carburatore", note:"Nota (opzionale)", send:"Invia via WhatsApp", copy:"Copia testo",
+  hint:"Allega una foto del raccordo con il calibro. Sovradimensionamento di stampa e tolleranze li calcoliamo noi.", back:"Indietro", next:"Avanti", toReq:"Alla richiesta",
+  carb:"Carburatore", motor:"Motore", total:"Lunghezza totale", totalG:"Lunghezza totale manicotto", sumH:"Richiesta manicotto", sumA:"Raccordo carburatore", sumB:"Raccordo collettore", sumLen:"lunghezza", sumNut:"gola", sumPos:"posizione", sumW:"larghezza", sumD:"profondità", sumGap:"Distanza", sumAng:"angolo", sumClamp:"fascetta", sumName:"Nome", sumBike:"Veicolo", sumNote:"Nota",
+  copied:"Testo copiato.", copyFail:"Copia non riuscita, seleziona il testo.", noWa:"Mockup: numero WhatsApp non ancora inserito." }
+};
+let LANG="de";
+const t=k=>T[LANG][k]??T.de[k]??k;
+function detectLang(){ try{ const s=localStorage.getItem("xag_lang"); if(s&&T[s]) return s; }catch(e){} const n=(navigator.language||"de").slice(0,2); return T[n]?n:"de"; }
+function setLang(l){ LANG=l; try{ localStorage.setItem("xag_lang",l); }catch(e){} document.documentElement.lang=l;
+  document.querySelectorAll("[data-i]").forEach(el=>el.textContent=t(el.dataset.i));
+  document.querySelectorAll("[data-ph]").forEach(el=>el.placeholder=t(el.dataset.ph));
+  document.querySelectorAll("#lang button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.l===l));
+  render(); }
+
+// ---------- Vorlagen ----------
+// Stutzen: d Außen-Ø, len Stutzenlänge, nf Nutform 0/1/2 (keine/halbrund/eckig), nn Anzahl, np Lage Stutzenende bis Nutanfang, nw Breite, nd Tiefe, ng Abstand Nutende bis 2. Nutanfang
+const side = (d,len,nf,nn,np,nw,nd,ng)=>({d,len,nf,nn,np,nw,nd,ng});
+// Vergaser: Hersteller, Reihe, Größen. Neue Reihe = eine Zeile.
+const CARBS = [
+  {m:"SmartCarb", r:"SC1",      s:[28,36,40]},
+  {m:"SmartCarb", r:"SC2",      s:[26,28,30,32,34,36,38,40]},
+  {m:"SmartCarb", r:"SC3",      s:[26,28,30,32,34,36,38,40]},
+  {m:"SmartCarb", r:"SC Cast",  s:[38]},
+  {m:"Lectron",   r:"Legacy",    s:[30,34,36,38,40]},
+  {m:"Lectron",   r:"Billetron", s:[36,38,40]},
+  {m:"Lectron",   r:"Pro-Series",s:[36,38,40]},
+  {m:"Mikuni",    r:"TM",       s:[24,28,32,34,36,38]},
+  {m:"Mikuni",    r:"TMX",      s:[27,30,32,35,38]},
+  {m:"Keihin",    r:"PJ",       s:[34,36,38]},
+  {m:"Keihin",    r:"PWK",      s:[28,33,35,36,38,39,41]},
+  {m:"Keihin",    r:"PWM",      s:[38]},
+  {m:"Dellorto",  r:"PHBL",     s:[24,25,26]},
+  {m:"Dellorto",  r:"PHBH",     s:[28,30]},
+  {m:"Dellorto",  r:"VHST",     s:[24,28]},
+  {m:"Dellorto",  r:"VHSH",     s:[30]},
+  {m:"Dellorto",  r:"VHSB",     s:[34,38,39]},
+  {m:"Dellorto",  r:"VHSC",     s:[39.5]},
+  {m:"Polini",    r:"CP",       s:[15,17.5,19,21,23,24]},
+  {m:"Koso",      r:"",         s:[28,30,32,34]},
+  {m:"BGM",       r:"PWK",      s:[24,28]},
+  {m:"?",         r:"",         s:[0]},
+];
+// Ansaugstutzen: Hersteller / Kit, Modelle. Neue Zeile = neuer Hersteller.
+const STUTZEN = [
+  {m:"Egig",             v:["170","180","187","250"]},
+  {m:"Quattrini",        v:["M200","M200S","252"]},
+  {m:"BFA",              v:["245","306"]},
+  {m:"Fabbri",           v:[""]},
+  {m:"Malossi",          v:["MHR 221","Membran"]},
+  {m:"Parmakit",         v:[""]},
+  {m:"Pinasco",          v:[""]},
+  {m:"Polini",           v:["Drehschieber","154","Membran"]},
+  {m:"MRP",              v:["CNC 30","CNC 35","CNC 38"]},
+  {m:"Casa Performance", v:["SSR"]},
+  {m:"Aprilia",          v:[""]},
+  {m:"Original",         v:["PX","PK"]},
+  {m:"?",                v:[""]},
+];
+// Bekannte Paarungen "Vergaser|Stutzen" mit Maßen: gemessener Stutzen (Gummi-ID minus 0,2 Übermaß), Nutlage = Stutzenende bis Nutanfang (Kettenmaß).
+const PAIRS = {
+  "Keihin PWK 39|Casa Performance SSR":  {A:side(44.9,15,1,1,9.4,2.3,0.5,3.5), B:side(45.0,13.5,1,2,3.6,2.3,0.5,3.5), gap:15.5, ang:0},
+  "Dellorto VHSB 39|Casa Performance SSR":{A:side(45.0,14,1,1,8.4,2.3,0.5,3.5), B:side(44.9,15,1,2,3.6,2.3,0.5,3.5),   gap:7,    ang:0},
+  "SmartCarb SC3 38|Aprilia":            {A:side(44.9,16,0,1,3.4,2.3,0.5,3.5), B:side(44.9,15,0,1,3.4,2.3,0.5,3.5),   gap:3,    ang:0},
+  "SmartCarb SC3 40|Egig 250":           {A:side(45.8,13,2,1,3.4,2.3,0.5,3.5), B:side(45.8,18,2,1,3.4,2.3,0.5,3.5),   gap:20,   ang:0},
+  "Polini CP 24|Polini Drehschieber":    {A:side(29.8,16,1,1,3.4,2.3,0.5,3.5), B:side(34.6,15,1,1,3.4,2.3,0.5,3.5),   gap:7,    ang:0},
+};
+const GENERIC = {A:side(40,15,1,1,3.9,2.3,0.5,3.5), B:side(40,15,1,1,3.9,2.3,0.5,3.5), gap:10, ang:0};
+const carbName = ()=> S.carb.m==="?" ? t("other") : [S.carb.m,S.carb.r,S.carb.s||""].filter(Boolean).join(" ");
+const stName   = ()=> S.st.m==="?"   ? t("other") : [S.st.m,S.st.v].filter(Boolean).join(" ");
+const pairKey  = ()=> `${[S.carb.m,S.carb.r,S.carb.s||""].filter(Boolean).join(" ")}|${[S.st.m,S.st.v].filter(Boolean).join(" ")}`;
+const pname    = ()=> `${carbName()} ↔ ${stName()}`;
+function loadPair(){ const p=PAIRS[pairKey()]||GENERIC; S.A={...p.A}; S.B={...p.B}; S.gap=p.gap; S.ang=String(p.ang);
+  S.mirror = JSON.stringify(p.A)===JSON.stringify(p.B)?1:0; S.known=!!PAIRS[pairKey()]; S.boreAuto=true; S.shape=0; }
+const LIM = {d:[15,70], len:[5,40], np:[1,30], nw:[1,6], nd:[0.2,2], ng:[2,15], gap:[0,60], angFree:[0,45], bore:[10,70]};
+
+const S = {step:0, carb:{m:"SmartCarb",r:"SC3",s:38}, st:{m:"Aprilia",v:""}, known:true, A:null, B:null, mirror:1, gap:15.5, ang:"0", angFree:10, hard:1, clamp:1, bore:40, boreAuto:true, shape:0, active:""};
+function cur(){ return S.step===2 ? S.B : S.A; }
+function angle(){ return S.ang==="free" ? S.angFree : parseFloat(S.ang); }
+function fmt(v){ const s=String(Math.round(v*10)/10); return LANG==="en" ? s : s.replace(".",","); }
+function total(){ return S.A.len + S.gap + S.B.len; }
+function nutPositions(X){ const c=X.np+X.nw/2; return X.nf===0 ? [] : (X.nn===2 ? [c, c+X.nw+X.ng] : [c]); } // Nutmitten aus Lage (bis Nutanfang), Breite, Abstand
+
+// ---------- Geometrie (mm, y nach oben) ----------
+// Stutzen-Halbprofil: z=0 freies Ende, z=len Anschlag, r=d/2, Nuten als Einschnitte von außen
+function spigotTop(X){
+  const r=X.d/2, pts=[[0,r]];
+  for(const c of nutPositions(X).sort((a,b)=>a-b)){ const a=c-X.nw/2, b=c+X.nw/2;
+    if(X.nf===2) pts.push([a,r],[a,r-X.nd],[b,r-X.nd],[b,r]);
+    else for(let t=0;t<=8;t++) pts.push([a+(b-a)*t/8, r-X.nd*Math.sin(Math.PI*t/8)]);
+  }
+  pts.push([X.len,r]); return pts;
+}
+function spigotPoly(X){ const t=spigotTop(X); return [...t, ...t.slice().reverse().map(([z,r])=>[z,-r])]; }
+// Lippe im Gummi: Gegenstück zur Nut, nur angedeutet (60 % der Nuttiefe, max 0,6)
+function lipPts(X, r, zOf, dir){
+  const h=Math.min(0.6*X.nd, 0.6), out=[];
+  const pos=nutPositions(X).sort((a,b)=>dir*(a-b));
+  for(const c of pos){ const zc=zOf(c), a=zc-X.nw/2+0.2, b=zc+X.nw/2-0.2; const seg=[];
+    if(X.nf===2) seg.push([a,r],[a,r-h],[b,r-h],[b,r]);
+    else for(let t=0;t<=8;t++) seg.push([a+(b-a)*t/8, r-h*Math.sin(Math.PI*t/8)]);
+    out.push(...(dir>0?seg:seg.reverse()));
+  }
+  return out;
+}
+function gummi(){
+  const w=WALL[S.hard], A=S.A, B=S.B, rA=A.d/2, rB=B.d/2, R=Math.max(rA,rB)+w, RL=R+LIP.h;
+  if(S.boreAuto) S.bore=Math.round((Math.min(A.d,B.d)-4)*10)/10;
+  const rS=Math.min(S.bore, Math.min(A.d,B.d)-1)/2, tA=A.len, tB=B.len, L=total();
+  const cw=CLAMP[S.clamp]; // Schellennut außen: Breite = Schellenbreite, Tiefe LIP.h, beginnt nach dem Endwulst
+  const outer=[[0,rA],[0,RL],[LIP.w,RL],[LIP.w,R],[LIP.w+cw,R],[LIP.w+cw,RL],[L-LIP.w-cw,RL],[L-LIP.w-cw,R],[L-LIP.w,R],[L-LIP.w,RL],[L,RL],[L,rB]];
+  const innerB=[...lipPts(B,rB,c=>L-tB+c,-1),[L-tB,rB],[L-tB,rS]];
+  const innerA=[[tA,rS],[tA,rA],...lipPts(A,rA,c=>tA-c,+1)];
+  return {pts:[...outer,...innerB,...innerA], R, RL, rA, rB, tA, tB, L};
+}
+function bender(P,aDeg){ // gerade bis zA, Kreisbogen in der Mittelsektion (zwei Trimmebenen), danach gerade. Endflächen im Winkel a.
+  const a=aDeg*Math.PI/180, zA=BEND_MARGIN, zB=P.L-BEND_MARGIN, Ls=Math.max(zB-zA,0.5), Rb=a>1e-6? Ls/a : 1e9;
+  const endX=zA+Rb*Math.sin(a), endY=-Rb+Rb*Math.cos(a);
+  return (z,r)=>{ if(a<1e-6||z<=zA) return [z,r];
+    if(z<zB){ const t=(z-zA)/Ls*a; return [zA+(Rb+r)*Math.sin(t), -Rb+(Rb+r)*Math.cos(t)]; }
+    const d=z-zB; return [endX+d*Math.cos(a)+r*Math.sin(a), endY-d*Math.sin(a)+r*Math.cos(a)]; };
+}
+function subdiv(pts){ const o=[]; for(let i=0;i<pts.length;i++){ const [z1,r1]=pts[i],[z2,r2]=pts[(i+1)%pts.length]; o.push([z1,r1]);
+  const n=Math.floor(Math.abs(z2-z1)); for(let k=1;k<n;k++){ const t=k/n; o.push([z1+(z2-z1)*t, r1+(r2-r1)*t]); } } return o; }
+
+// ---------- SVG-Helfer ----------
+function canvas(svg, pts, pad, maxH){ // viewBox 360 breit, Höhe aus Bounding Box, optional auf maxH begrenzt (dann kleiner und zentriert)
+  const xs=pts.map(p=>p[0]), ys=pts.map(p=>p[1]);
+  const minX=Math.min(...xs)-pad, maxX=Math.max(...xs)+pad, minY=Math.min(...ys)-pad, maxY=Math.max(...ys)+pad;
+  let sc=360/(maxX-minX), H=(maxY-minY)*sc, ox=0;
+  if(maxH && H>maxH){ sc=maxH/(maxY-minY); H=maxH; ox=(360-(maxX-minX)*sc)/2; }
+  svg.setAttribute("viewBox",`0 0 360 ${H.toFixed(0)}`);
+  return {X:x=>((x-minX)*sc+ox).toFixed(1), Y:y=>((maxY-y)*sc).toFixed(1), sc};
+}
+const DEFS=`<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" fill="context-stroke"/></marker><marker id="arO" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M10,1 L0,5 L10,9 z" fill="context-stroke"/></marker><pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="5" stroke="var(--hatch)" stroke-width="1"/></pattern></defs>`;
+const poly=(M,pts,style)=>`<polygon points="${pts.map(([x,y])=>M.X(x)+","+M.Y(y)).join(" ")}" ${style}/>`;
+const SOLID='fill="var(--fill)" stroke="var(--stroke)" stroke-width="1.4" stroke-linejoin="round"';
+const GHOST='fill="none" stroke="var(--ghost)" stroke-width="1" stroke-dasharray="4 3"';
+const txt=(x,y,tx,anchor,col)=>`<text x="${x}" y="${y}" text-anchor="${anchor||"middle"}" fill="${col||"var(--dim)"}">${tx}</text>`;
+function dim(M,key,x1,y1,x2,y2,tx,dy,labelAt){ const on=S.active===key||!S.active, c=on?"var(--dim)":"var(--dimq)";
+  const lbl = labelAt ? txt(M.X(labelAt[0]),+M.Y(labelAt[1])+4,tx,"start",c) : txt((+M.X(x1)+ +M.X(x2))/2,(+M.Y(y1)+ +M.Y(y2))/2+(dy||-5),tx,"middle",c);
+  return `<line x1="${M.X(x1)}" y1="${M.Y(y1)}" x2="${M.X(x2)}" y2="${M.Y(y2)}" stroke="${c}" stroke-width="${on?1.2:1}" marker-start="url(#ar)" marker-end="url(#ar)"/>`+lbl; }
+const axis=(M,pts)=>`<polyline points="${pts.map(([x,y])=>M.X(x)+","+M.Y(y)).join(" ")}" fill="none" stroke="var(--ghost)" stroke-width=".8" stroke-dasharray="10 4 2 4"/>`;
+
+// ---------- Ansichten ----------
+// Umriss-Helfer (mm, z entlang Achse, r Radius / Höhe). Rechteck mit Rundungen als Polygon.
+function rrect(z1,z2,r1,r2,rad){ const pts=[], c=[[z2,r2,0],[z1,r2,1],[z1,r1,2],[z2,r1,3]]; // Ecken gegen Uhrzeiger
+  for(const [cz,cr,q] of c){ const sz=(q===0||q===3)?-1:1, sr=(q===0||q===1)?-1:1; const cx=cz+sz*rad, cy=cr+sr*rad;
+    for(let i=0;i<=5;i++){ const a=(q*90+i*18)*Math.PI/180; pts.push([cx+rad*Math.cos(a), cy+rad*Math.sin(a)]); } }
+  return pts; }
+const P2=(M,pts)=>pts.map(([x,y])=>M.X(x)+","+M.Y(y)).join(" ");
+const BODY='fill="var(--body)" stroke="var(--stroke)" stroke-width="1.1" stroke-linejoin="round"';
+const THIN='fill="none" stroke="var(--stroke)" stroke-width=".7"';
+const HID='fill="none" stroke="var(--ghost)" stroke-width=".7" stroke-dasharray="5 2.5 1 2.5"';
+const line=(M,z1,r1,z2,r2,st)=>`<line x1="${M.X(z1)}" y1="${M.Y(r1)}" x2="${M.X(z2)}" y2="${M.Y(r2)}" ${st||THIN}/>`;
+const circ=(M,z,r,rad,st)=>`<circle cx="${M.X(z)}" cy="${M.Y(r)}" r="${(rad*M.sc).toFixed(1)}" ${st||THIN}/>`;
+
+// Vergaser-Seitenansicht nach SmartCarb SC3 (Billet-Block, Deckel mit Clicker, Schwimmerkammer unten, Luftfilterseite rechts).
+// Stutzen links (freies Ende z=0), Gehäuse ab z=len. Proportionen relativ zum Stutzen-Ø d.
+function carbOutline(X){
+  const d=X.d, L=X.len, b0=L, bL=1.55*d, hT=0.95*d, hB=0.55*d, g=[];
+  g.push(['poly', rrect(b0, b0+bL, -hB, hT, 2.5), BODY]);                                         // Billet-Block
+  g.push(['poly', rrect(b0+bL-1, b0+bL+0.32*d, -0.68*d, 0.68*d, 2), BODY]);                       // Luftfilterstutzen (größer als motorseitig)
+  g.push(['poly', rrect(b0-2, b0+bL+2, hT, hT+0.12*d, 1.5), BODY]);                              // Deckelplatte
+  g.push(['poly', rrect(b0+0.62*d, b0+0.92*d, hT+0.12*d, hT+0.22*d, 1), BODY]);                  // Clicker-Gehäuse
+  g.push(['poly', rrect(b0+0.72*d, b0+0.82*d, hT+0.22*d, hT+0.42*d, .5), BODY]);                 // Clicker-Schraube
+  g.push(['poly', rrect(b0+0.1*d, b0+bL-0.1*d, -hB-0.5*d, -hB+1, 3), BODY]);                     // Schwimmerkammer
+  g.push(['poly', rrect(b0+0.62*d, b0+0.78*d, -hB-0.5*d-0.1*d, -hB-0.5*d+.5, 1), BODY]);          // Ablass
+  g.push(['poly', rrect(b0-0.14*d, b0+0.01*d, 0.2*d, 0.42*d, 1), BODY]);                          // Benzinanschluss
+  g.push(['poly', rrect(b0-0.1*d, b0+0.01*d, -0.1*d, 0.08*d, 1), BODY]);                          // Leerlaufschraube
+  const ex=(M)=>line(M,b0+0.12*d,hT-0.08*d,b0+bL-0.12*d,hT-0.08*d)+line(M,b0+0.12*d,-hB+0.08*d,b0+bL-0.12*d,-hB+0.08*d)
+    +circ(M,b0+0.2*d,hT-0.2*d,0.035*d)+circ(M,b0+bL-0.2*d,hT-0.2*d,0.035*d)+circ(M,b0+0.2*d,-hB+0.2*d,0.035*d)+circ(M,b0+bL-0.2*d,-hB+0.2*d,0.035*d)
+    +line(M,b0+1,0,b0+bL+0.3*d,0,HID);
+  return {g, extra:ex, bbox:[[b0-0.15*d,-hB-0.62*d],[b0+bL+0.34*d,hT+0.44*d]]};
+}
+// Membran-Ansaugstutzen nach MRP/Egig: runder Stutzen, Rundflansch, Membranblock (Keil), Flanschplatte mit Schrauben, Motorgehäuse angedeutet
+function manifoldOutline(X){
+  const d=X.d, L=X.len, b0=L, g=[];
+  g.push(['poly', rrect(b0, b0+0.1*d, -0.72*d, 0.72*d, 1.5), BODY]);                              // Rundflansch am Stutzen
+  g.push(['poly', [[b0+0.1*d,0.62*d],[b0+0.75*d,0.95*d],[b0+0.75*d,-0.95*d],[b0+0.1*d,-0.62*d]], BODY]); // Membranblock, keilförmig
+  g.push(['poly', rrect(b0+0.75*d, b0+0.88*d, -1.15*d, 1.15*d, 1.5), BODY]);                      // Flanschplatte
+  g.push(['poly', rrect(b0+0.88*d, b0+1.2*d, -1.0*d, 1.0*d, 1), 'fill="var(--hatch)" stroke="var(--stroke)" stroke-width=".8" opacity=".5"']); // Motorgehäuse
+  const ex=(M)=>circ(M,b0+0.815*d,0.98*d,0.045*d)+circ(M,b0+0.815*d,-0.98*d,0.045*d)
+    +line(M,b0+0.2*d,0.5*d,b0+0.7*d,0.25*d)+line(M,b0+0.2*d,-0.5*d,b0+0.7*d,-0.25*d)+line(M,b0+0.2*d,0.5*d,b0+0.2*d,-0.5*d)
+    +line(M,b0+1,0,b0+1.18*d,0,HID);
+  return {g, extra:ex, bbox:[[b0-2,-1.2*d],[b0+1.22*d,1.2*d]]};
+}
+// Maßlinie in Pixel-Koordinaten. pos: "above" | "below" | "left" | "right" | "above2" (höher versetzt)
+function dimP(key,x1,y1,x2,y2,tx,pos){ const on=S.active===key||!S.active, c=on?"var(--dim)":"var(--dimq)", w=on?1.2:0.9;
+  const mx=(x1+x2)/2, my=(y1+y2)/2;
+  const lab = pos==="left"? txt(mx-5,my+4,tx,"end",c) : pos==="right"? txt(mx+5,my+4,tx,"start",c) : pos==="below"? txt(mx,my+13,tx,"middle",c) : pos==="above2"? txt(mx,my-14,tx,"middle",c) : txt(mx,my-4,tx,"middle",c);
+  const small = Math.abs(x2-x1)<14 && Math.abs(y2-y1)<14; // zu kurz für Pfeile innen: Pfeile außen
+  const mk = small ? `marker-start="url(#arO)" marker-end="url(#arO)"` : `marker-start="url(#ar)" marker-end="url(#ar)"`;
+  const tick = small && pos && pos.startsWith("above") ? `<line x1="${mx}" y1="${my}" x2="${mx}" y2="${my-(pos==="above2"?11:8)}" stroke="${c}" stroke-width=".6"/>` : "";
+  return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${w}" ${mk}/>`+tick+lab; }
+const ext=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--dimq)" stroke-width=".6"/>`; // Maßhilfslinie
+
+function drawSide(svg, X, label, kind){
+  const d=X.d, r=d/2, W=360, H=310, cy=kind==="manifold"?112:104, sc=kind==="manifold"?80/d:76/d, x0=58; // Stutzen-Ø in px, freies Ende bei x0
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  const M={X:z=>+(x0+z*sc).toFixed(1), Y:rr=>+(cy-rr*sc).toFixed(1), sc};
+  const O = kind==="manifold" ? manifoldOutline(X) : carbOutline(X);
+  let s=DEFS+axis(M,[[-9,0],[O.bbox[1][0],0]]);
+  for(const [,pts,st] of O.g) s+=`<polygon points="${P2(M,pts)}" ${st}/>`;
+  s+=O.extra(M);
+  s+=`<polygon points="${P2(M,spigotPoly(X))}" ${SOLID}/>`;
+  s+=line(M,0.8,r-2.5,X.len,r-2.5,HID)+line(M,0.8,-r+2.5,X.len,-r+2.5,HID);                  // verdeckte Bohrung
+  s+=line(M,0,r-0.8,0.8,r,THIN)+line(M,0,-r+0.8,0.8,-r,THIN);                                 // Fase
+  s+=txt(W-8,14,label,"end","var(--muted)");
+  // Hauptmaße: Ø links, Länge unten, Nutlage(n) oben
+  const yT=M.Y(r), yB=M.Y(-r), xE=M.X(X.len);
+  s+=ext(x0-4,yT,x0-22,yT)+ext(x0-4,yB,x0-22,yB)+dimP("d",x0-16,yT,x0-16,yB,`Ø ${fmt(d)}`,"left");
+  s+=ext(x0,yB+3,x0,yB+22)+ext(xE,yB+3,xE,yB+22)+dimP("len",x0,yB+16,xE,yB+16,fmt(X.len),"below");
+  const pos=nutPositions(X).sort((a,b)=>a-b);
+  if(pos.length){
+    // Marker A am Hauptbild: Bereich vom Stutzenende bis hinter die letzte Nut
+    const zEnd=X.np+X.nw+(pos.length>1?X.ng+X.nw:0)+1.5, xa=x0-3, xb=M.X(zEnd), ya=yT-6, yb=yT+0.3*d*sc;
+    s+=`<rect x="${xa}" y="${ya}" width="${(xb-xa).toFixed(1)}" height="${(yb-ya).toFixed(1)}" fill="none" stroke="var(--dim)" stroke-width=".8" stroke-dasharray="3 2" rx="2"/>`+txt(xb+4,ya+10,"A","start","var(--dim)");
+    // Detail A: Rechteck unten, Stutzenende links, Nuten als Schnitt mit Schraffur, Kettenmaß oben, Tiefe rechts
+    const DW=W-2*12, DH=96, dx=12, dy=H-DH-8, k=Math.min((DW-70)/(zEnd+1), 9);     // Zoomfaktor, max 9 px/mm
+    const ox=dx+44, oy=dy+58;                                                         // Ursprung: Stutzenende (z=0), Außenkante (r)
+    const DX=z=>+(ox+z*k).toFixed(1), DY=rr=>+(oy-(rr-r)*k).toFixed(1);
+    const top=spigotTop(X).filter(([z])=>z<=zEnd+2).map(([z,rr])=>[DX(z),DY(rr)]);
+    const prof=[[DX(0),DY(r-0.8)],[DX(0.8),DY(r)],...top.slice(1),[DX(zEnd+2),DY(r)]].map(p=>p.join(",")).join(" ");
+    s+=`<clipPath id="dA"><rect x="${dx}" y="${dy}" width="${DW}" height="${DH}" rx="6"/></clipPath><g clip-path="url(#dA)">`;
+    s+=`<rect x="${dx}" y="${dy}" width="${DW}" height="${DH}" fill="var(--card)"/>`;
+    s+=`<polygon points="${prof} ${DX(zEnd+2)},${dy+DH} ${DX(0)},${dy+DH}" fill="url(#hatch)" stroke="var(--stroke)" stroke-width="1.2"/>`;
+    s+=`<polygon points="${prof} ${DX(zEnd+2)},${dy+DH} ${DX(0)},${dy+DH}" fill="var(--fill)" fill-opacity=".5" stroke="none"/></g>`;
+    s+=`<rect x="${dx}" y="${dy}" width="${DW}" height="${DH}" rx="6" fill="none" stroke="var(--dim)" stroke-width=".9"/>`+txt(dx+8,dy+14,"A","start","var(--dim)");
+    // Kettenmaß: Ende | Lage | Breite | Abstand | Breite, Texte abwechselnd in zwei Höhen
+    const yK=oy-22, pts=[0, X.np, X.np+X.nw]; if(pos.length>1) pts.push(X.np+X.nw+X.ng, X.np+2*X.nw+X.ng);
+    for(const z of pts) s+=ext(DX(z),oy-3,DX(z),yK-8);
+    s+=dimP("np",DX(pts[0]),yK,DX(pts[1]),yK,fmt(X.np),"above");
+    s+=dimP("nw",DX(pts[1]),yK,DX(pts[2]),yK,fmt(X.nw),"above2");
+    if(pos.length>1){ s+=dimP("ng",DX(pts[2]),yK,DX(pts[3]),yK,fmt(X.ng),"above"); s+=dimP("nw",DX(pts[3]),yK,DX(pts[4]),yK,fmt(X.nw),"above2"); }
+    // Tiefe rechts neben der letzten Nut
+    const zl=pts[pts.length-1], xd=DX(zl)+10;
+    s+=ext(DX(zl)+2,DY(r),xd+6,DY(r))+ext(DX(zl)+2,DY(r-X.nd),xd+6,DY(r-X.nd))+dimP("nd",xd,DY(r),xd,DY(r-X.nd),fmt(X.nd),"right");
+  }
+  svg.innerHTML=s;
+}
+function drawInstall(svg){
+  const A=S.A, B=S.B, a=angle()*Math.PI/180, g=S.gap;
+  // Vergaser links (Stutzen zeigt nach rechts, Ende bei z=0), Motor rechts (Ende bei z=g), um die Spaltmitte gedreht
+  const flipA=([z,r])=>[-z,r];
+  const rot=([z,r])=>{ const x=z-g/2, y=r; return [g/2+x*Math.cos(a)+y*Math.sin(a), -x*Math.sin(a)+y*Math.cos(a)]; };
+  const OA=carbOutline(A), OB=manifoldOutline(B);
+  const polysA=OA.g.map(([k,pts,st])=>[pts.map(flipA),st]), polysB=OB.g.map(([k,pts,st])=>[pts.map(([z,r])=>rot([g+z,r])),st]);
+  const spA=spigotPoly(A).map(flipA), spB=spigotPoly(B).map(([z,r])=>rot([g+z,r]));
+  const all=[...polysA.flatMap(x=>x[0]),...polysB.flatMap(x=>x[0]),...spA,...spB];
+  const yLo=Math.min(...all.map(p=>p[1]))-9, yHi=Math.max(...all.map(p=>p[1]))+8;
+  const M=canvas(svg,[...all,[0,yLo],[0,yHi]],3,260);
+  let s=DEFS;
+  for(const [pts,st] of polysA) s+=`<polygon points="${P2(M,pts)}" ${st}/>`;
+  for(const [pts,st] of polysB) s+=`<polygon points="${P2(M,pts)}" ${st}/>`;
+  s+=`<polygon points="${P2(M,spA)}" ${SOLID}/><polygon points="${P2(M,spB)}" ${SOLID}/>`;
+  s+=axis(M,[[-OA.bbox[1][0],0],[0,0]])+axis(M,[rot([g,0]),rot([g+OB.bbox[1][0],0])]);
+  s+=txt(8,14,t("carb"),"start","var(--muted)")+txt(352,14,t("motor"),"end","var(--muted)");
+  const yD=Math.max(A.d,B.d)/2+4; s+=dim(M,"gap",0,yD,g,yD,`${fmt(g)}`,-4);
+  if(a) s+=txt(M.X(g/2),M.Y(-yD-4),`${fmt(angle())}°`);
+  s+=txt(180,+svg.getAttribute("viewBox").split(" ")[3]-6,`${t("totalG")} ${fmt(total())} mm`,"middle","var(--muted)");
+  svg.innerHTML=s;
+}
+function drawGummi(svg){
+  const P=gummi(), a=angle(), Bd=bender(P,a);
+  const top=subdiv(P.pts).map(([z,r])=>Bd(z,r)), bot=subdiv(P.pts).map(([z,r])=>Bd(z,-r));
+  const ax=[]; for(let z=-5;z<=P.L+5;z+=1) ax.push(Bd(z,0));
+  const ghostA=spigotPoly(S.A).map(([z,r])=>[P.tA-z,r]).map(([z,r])=>Bd(z,r));
+  const ghostB=subdiv(spigotPoly(S.B).map(([z,r])=>[P.L-P.tB+z,r])).map(([z,r])=>Bd(z,r));
+  const M=canvas(svg,[...top,...bot,...ax,...ghostB,[0,P.RL+9],[0,-P.RL-9]],4,320);
+  let s=DEFS+axis(M,ax)+poly(M,top,SOLID)+poly(M,bot,SOLID);
+  s+=poly(M,ghostA,GHOST)+poly(M,ghostB,GHOST);
+  s+=dim(M,"L",0,P.RL+5,P.L,P.RL+5,`${t("total")} ${fmt(P.L)}`);
+  s+=txt(M.X(-2),+M.Y(0)+4,`Ø ${fmt(S.A.d)}`,"end"); const [ex,ey]=Bd(P.L+2,0); s+=txt(M.X(ex),+M.Y(ey)+4,`Ø ${fmt(S.B.d)}`,"start");
+  if(a){ const [cx,cy]=Bd(P.L/2,P.RL+1); s+=txt(M.X(cx),M.Y(cy),`${fmt(a)}°`); }
+  s+=txt(M.X(0),M.Y(-P.RL-6),t("carb"),"start","var(--muted)"); const [lx,ly]=Bd(P.L,-P.RL-6); s+=txt(M.X(lx),M.Y(ly),t("motor"),"end","var(--muted)");
+  svg.innerHTML=s;
+}
+
+// ---------- Text ----------
+const NFK=["nf0","nf1","nf2"];
+function sideTxt(X){ return `Ø ${fmt(X.d)}, ${t("sumLen")} ${fmt(X.len)}, ${t("sumNut")} ${t(NFK[X.nf])}`+(X.nf?` ${X.nn}x, ${t("sumPos")} ${fmt(X.np)}, ${t("sumW")} ${fmt(X.nw)}, ${t("sumD")} ${fmt(X.nd)}`+(X.nn===2?`, ${t("ng")} ${fmt(X.ng)}`:""):""); }
+function code(){ const f=v=>String(Math.round(v*10)/10).replace(".",","); const n=X=>X.nf?`${X.nn}${["","h","e"][X.nf]}${f(X.np)}`:"0";
+  return `XAG ${f(S.A.d)}/${f(S.A.len)}/${n(S.A)} | ${f(S.B.d)}/${f(S.B.len)}/${n(S.B)} | S${f(S.gap)} L${f(total())} | ${f(angle())}° | ${S.hard?"H":"W"} | ${S.clamp?"B":"S"} | D${f(S.bore)}${S.shape?"hz":"r"} | ${LANG}`; }
+function v(id){ return document.getElementById(id).value.trim(); }
+function summary(){ return [
+  `${t("sumH")}: ${pname()}`,
+  `${t("sumA")}: ${sideTxt(S.A)}`,
+  `${t("sumB")}: ${sideTxt(S.B)}`,
+  `${t("sumGap")} ${fmt(S.gap)} mm, ${t("total")} ${fmt(total())} mm, ${t("sumAng")} ${fmt(angle())}°, ${t(S.hard?"hardV":"soft")}, ${t("sumClamp")} ${t(S.clamp?"wide":"narrow")}, ${t("bore")} ${fmt(S.bore)} ${t(S.shape?"heart":"round")}`,
+  `Code: ${code()}`,
+  `${t("sumName")}: ${v("name")} | ${t("sumBike")}: ${v("bike")}${v("note")?" | "+t("sumNote")+": "+v("note"):""}` ].join("\n"); }
+
+// ---------- Render ----------
+const chips=(id,items,sel,label)=>{ document.getElementById(id).innerHTML=items.map(x=>`<button class="chip" data-v="${x}" aria-pressed="${String(x)===String(sel)}">${label(x)}</button>`).join(""); };
+function renderStep0(){
+  const ms=[...new Set(CARBS.map(c=>c.m))]; chips("carbM",ms,S.carb.m,x=>x==="?"?t("other"):x);
+  const rs=CARBS.filter(c=>c.m===S.carb.m).map(c=>c.r); document.getElementById("carbRwrap").hidden = rs.length<2 || !rs[0]; chips("carbR",rs,S.carb.r,x=>x);
+  const row=CARBS.find(c=>c.m===S.carb.m&&c.r===S.carb.r)||CARBS.find(c=>c.m===S.carb.m); chips("carbS",row.s,S.carb.s,x=>x?fmt(x):t("other"));
+  document.getElementById("carbS").parentElement.hidden = row.s.length===1 && !row.s[0];
+  const sm=STUTZEN.map(x=>x.m); chips("stM",sm,S.st.m,x=>x==="?"?t("other"):x);
+  const st=STUTZEN.find(x=>x.m===S.st.m); document.getElementById("stVwrap").hidden = !(st.v.length>1 || st.v[0]); chips("stV",st.v,S.st.v,x=>x||t("other"));
+  document.getElementById("pairInfo").textContent = (S.known? t("pairOk") : t("pairNone")) + "  (" + pname() + ")";
+}
+function render(){
+  if(S.mirror) S.B={...S.A};
+  document.querySelectorAll("[data-step]").forEach(el=>{ const st=+el.dataset.step; el.hidden = !(st===S.step || (st===1 && S.step===2)); });
+  document.getElementById("steps").innerHTML=Array.from({length:STEPS},(_,i)=>`<span class="${i<=S.step?"on":""}"></span>`).join("");
+  document.getElementById("back").disabled=S.step===0; document.getElementById("next").hidden=S.step===STEPS-1;
+  document.getElementById("next").textContent = S.step===STEPS-2 ? t("toReq") : t("next");
+  const X=cur(), onB=S.step===2;
+  document.getElementById("sideTitle").textContent = t(onB?"s2h":"s1h");
+  document.getElementById("sideSub").textContent = t(onB?"s2p":"s1p");
+  document.getElementById("mirrorRow").hidden=!onB; document.getElementById("sideFields").hidden = onB && S.mirror===1;
+  document.querySelector(".nut").hidden = X.nf===0; document.querySelector(".nut2").hidden = X.nn!==2;
+  document.getElementById("angFreeRow").hidden = S.ang!=="free";
+  document.querySelectorAll(".step").forEach(el=>{ const k=el.dataset.k, val = k in X ? X[k] : S[k]; const inp=el.querySelector("input.val"); if(document.activeElement!==inp) inp.value=fmt(val)+(k==="angFree"?"°":" mm"); });
+  document.querySelectorAll(".chips[data-k]").forEach(el=>{ const k=el.dataset.k, val = k in X ? X[k] : S[k]; el.querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed", String(val)===b.dataset.v)); });
+  if(S.step===0) renderStep0();
+  const pv=document.getElementById("preview"); pv.hidden = !(S.step>=1&&S.step<=4);
+  ["sk1","sk3","sk4"].forEach(id=>{ const on=(id==="sk1"&&(S.step===1||S.step===2))||(id==="sk3"&&S.step===3)||(id==="sk4"&&S.step===4); const el=document.getElementById(id); if(on) el.removeAttribute("hidden"); else el.setAttribute("hidden",""); });
+  if(S.step===1||S.step===2) drawSide(document.getElementById("sk1"), X, t(onB?"motor":"carb"), onB?"manifold":"carb");
+  if(S.step===3) drawInstall(document.getElementById("sk3"));
+  if(S.step===4){ if(S.boreAuto) S.bore=Math.round((Math.min(S.A.d,S.B.d)-4)*10)/10; drawGummi(document.getElementById("sk4")); const bi=document.getElementById("boreInfo"); bi.textContent = S.shape===1 ? t("boreHeart") : (S.carb.m==="SmartCarb" ? t("boreSC") : ""); bi.hidden = !bi.textContent; }
+  if(S.step===5) document.getElementById("summary").textContent=summary();
+}
+
+// ---------- Events ----------
+document.getElementById("lang").addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) setLang(b.dataset.l); });
+const pick=(id,fn)=>document.getElementById(id).addEventListener("click",e=>{ const b=e.target.closest(".chip"); if(!b) return; fn(b.dataset.v); loadPair(); render(); });
+pick("carbM",v=>{ const row=CARBS.find(c=>c.m===v); S.carb={m:v,r:row.r,s:row.s[0]}; });
+pick("carbR",v=>{ const row=CARBS.find(c=>c.m===S.carb.m&&c.r===v); S.carb={m:S.carb.m,r:v,s:row.s[0]}; });
+pick("carbS",v=>{ S.carb.s=parseFloat(v); });
+pick("stM",v=>{ const row=STUTZEN.find(x=>x.m===v); S.st={m:v,v:row.v[0]}; });
+pick("stV",v=>{ S.st.v=v; });
+document.querySelectorAll(".step").forEach(el=>{
+  const k=el.dataset.k, s=parseFloat(el.dataset.s), [b1,b2]=el.querySelectorAll("button");
+  const clamp=v=>Math.min(LIM[k][1],Math.max(LIM[k][0],Math.round(v*10)/10));
+  const set=d=>{ const X=cur(), tgt = k in X ? X : S; tgt[k]=clamp(tgt[k]+d); if(k==="bore") S.boreAuto=false; S.active=k; render(); };
+  b1.addEventListener("click",()=>set(-s)); b2.addEventListener("click",()=>set(s));
+  const inp=el.querySelector("input.val");
+  inp.addEventListener("focus",()=>{ const X=cur(); inp.value=String(k in X ? X[k] : S[k]).replace(".",LANG==="en"?".":","); inp.select(); S.active=k; render(); });
+  inp.addEventListener("input",()=>{ const v=parseFloat(inp.value.replace(",",".")); if(isFinite(v)){ const X=cur(), tgt = k in X ? X : S; tgt[k]=clamp(v); if(k==="bore") S.boreAuto=false; render(); } });
+  inp.addEventListener("blur",()=>render());
+  inp.addEventListener("keydown",e=>{ if(e.key==="Enter") inp.blur(); });
+});
+document.querySelectorAll(".chips[data-k]").forEach(el=>el.addEventListener("click",e=>{
+  const b=e.target.closest(".chip"); if(!b) return; const k=el.dataset.k, val=b.dataset.v, X=cur();
+  const num = k==="ang" ? val : parseFloat(val);
+  if(k in X) X[k]=num; else S[k]=num;
+  if(k==="mirror"&&S.mirror===0) S.B={...S.A};
+  S.active=k; render();
+}));
+document.getElementById("back").addEventListener("click",()=>{ S.step=Math.max(0,S.step-1); S.active=""; render(); window.scrollTo(0,0); });
+document.getElementById("next").addEventListener("click",()=>{ S.step=Math.min(STEPS-1,S.step+1); S.active=""; render(); window.scrollTo(0,0); });
+["name","bike","note"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{ document.getElementById("summary").textContent=summary(); }));
+document.getElementById("copy").addEventListener("click",async()=>{ try{ await navigator.clipboard.writeText(summary()); alert(t("copied")); }catch(e){ alert(t("copyFail")); } });
+loadPair();
+{ const m=location.hash.match(/step=(\d)/); if(m) S.step=Math.min(STEPS-1,+m[1]); const a=location.hash.match(/ang=([\d.]+)/); if(a){ S.ang="free"; S.angFree=+a[1]; } }
+setLang(detectLang());
+</script>
+</body>
+</html>
