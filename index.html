@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
 <title>Ansauggummi Konfigurator</title>
-<!-- XAG Konfigurator v0.6.8 (Mockup) | 2026-10-13 | _personal/xyger/ansauggummi/konfigurator.html -->
+<!-- XAG Konfigurator v0.6.9 (Mockup) | 2026-10-13 | _personal/xyger/ansauggummi/konfigurator.html -->
 <style>
   :root{
     --bg:#f4f5f7; --card:#ffffff; --ink:#1b1f24; --muted:#6b7280; --line:#e2e5ea;
@@ -226,7 +226,6 @@ const STUTZEN = [
   {m:"Polini",           v:["Drehschieber","154","Membran"]},
   {m:"MRP",              v:["CNC 30","CNC 35","CNC 38"]},
   {m:"Casa Performance", v:["SSR"]},
-  {m:"Aprilia",          v:[""]},
   {m:"Original",         v:["PX","PK"]},
   {m:"?",                v:[""]},
 ];
@@ -234,7 +233,6 @@ const STUTZEN = [
 const PAIRS = {
   "Keihin PWK 39|Casa Performance SSR":  {A:side(44.9,15,1,1,9.4,2.3,0.5,3.5), B:side(45.0,13.5,1,2,3.6,2.3,0.5,3.5), gap:15.5, ang:0},
   "Dellorto VHSB 39|Casa Performance SSR":{A:side(45.0,14,1,1,8.4,2.3,0.5,3.5), B:side(44.9,15,1,2,3.6,2.3,0.5,3.5),   gap:7,    ang:0},
-  "SmartCarb SC3 38|Aprilia":            {A:side(44.9,16,0,1,3.4,2.3,0.5,3.5), B:side(44.9,15,0,1,3.4,2.3,0.5,3.5),   gap:3,    ang:0},
   "SmartCarb SC3 40|Egig 250":           {A:side(45.8,13,2,1,3.4,2.3,0.5,3.5), B:side(45.8,18,2,1,3.4,2.3,0.5,3.5),   gap:20,   ang:0},
   "Polini CP 24|Polini Drehschieber":    {A:side(29.8,16,1,1,3.4,2.3,0.5,3.5), B:side(34.6,15,1,1,3.4,2.3,0.5,3.5),   gap:7,    ang:0},
 };
@@ -251,7 +249,7 @@ function loadPair(){ const p=PAIRS[pairKey()]||GENERIC; S.A={...p.A}; S.B={...p.
   S.mirror = JSON.stringify(S.A)===JSON.stringify(S.B)?1:0; S.known=!!PAIRS[pairKey()]; S.boreAuto=true; S.shape=0; }
 const LIM = {d:[15,70], len:[5,40], np:[1,30], nw:[1,6], nd:[0.2,2], ng:[2,15], gap:[0,60], angFree:[0,45], bore:[10,70]};
 
-const S = {step:0, carb:{m:"SmartCarb",r:"SC3",s:38}, st:{m:"Aprilia",v:""}, known:true, A:null, B:null, mirror:1, gap:15.5, ang:"0", angFree:10, hard:1, clamp:1, bore:40, boreAuto:true, shape:0, active:""};
+const S = {step:0, carb:{m:"SmartCarb",r:"SC3",s:38}, st:{m:"Quattrini",v:"M200S"}, known:true, A:null, B:null, mirror:1, gap:15.5, ang:"0", angFree:10, hard:1, clamp:1, bore:40, boreAuto:true, shape:0, active:""};
 function cur(){ return S.step===2 ? S.B : S.A; }
 function angle(){ return S.ang==="free" ? S.angFree : parseFloat(S.ang); }
 function fmt(v){ const s=String(Math.round(v*10)/10); return LANG==="en" ? s : s.replace(".",","); }
