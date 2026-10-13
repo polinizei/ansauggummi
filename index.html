@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
 <title>Ansauggummi Konfigurator</title>
-<!-- XAG Konfigurator v0.6.1 (Mockup) | 2026-10-13 | _personal/xyger/ansauggummi/konfigurator.html -->
+<!-- XAG Konfigurator v0.6.3 (Mockup) | 2026-10-13 | _personal/xyger/ansauggummi/konfigurator.html -->
 <style>
   :root{
     --bg:#f4f5f7; --card:#ffffff; --ink:#1b1f24; --muted:#6b7280; --line:#e2e5ea;
@@ -327,23 +327,38 @@ const HID='fill="none" stroke="var(--ghost)" stroke-width=".7" stroke-dasharray=
 const line=(M,z1,r1,z2,r2,st)=>`<line x1="${M.X(z1)}" y1="${M.Y(r1)}" x2="${M.X(z2)}" y2="${M.Y(r2)}" ${st||THIN}/>`;
 const circ=(M,z,r,rad,st)=>`<circle cx="${M.X(z)}" cy="${M.Y(r)}" r="${(rad*M.sc).toFixed(1)}" ${st||THIN}/>`;
 
-// Vergaser-Seitenansicht nach SmartCarb SC3 (Billet-Block, Deckel mit Clicker, Schwimmerkammer unten, Luftfilterseite rechts).
-// Stutzen links (freies Ende z=0), Gehäuse ab z=len. Proportionen relativ zum Stutzen-Ø d.
+// Vergaser-Silhouetten: Proportionen je Hersteller relativ zum Stutzen-Ø d (Seitenansicht, Motorseite links).
+// SmartCarb aus SC3-Foto ausgemessen (2026-10-14). Übrige Werte vorläufig, bis Referenzfotos vermessen sind (siehe prompt.md ## Offen).
+// w Blockbreite, up Blockoberkante, dn Blockunterkante, tw Domberite (0 = Block geht bis oben, billet), cap Deckelhöhe, stem/knob Clicker bzw. Zugeinsteller,
+// bowl [z-Start, z-Ende, Unterkante], air [Länge, Radius] Luftfilterring, fl [Länge, Radius] Flanschring am Stutzen, style billet | cast
+const PROP = {
+  SmartCarb:{w:1.33, up:1.30, dn:1.10, tw:0,    cap:0.10, stem:0.20, knob:0.10, bowl:[0.13,1.20,1.70], air:[0.25,0.60], fl:[0.10,0.60], style:"billet"},
+  Lectron:  {w:1.20, up:1.35, dn:1.05, tw:0,    cap:0.10, stem:0.18, knob:0.10, bowl:[0.12,1.10,1.60], air:[0.25,0.60], fl:[0.10,0.58], style:"billet"},
+  Mikuni:   {w:1.40, up:0.65, dn:1.00, tw:0.70, th:1.55, cap:0.12, stem:0.15, knob:0.08, bowl:[0.15,1.25,1.60], air:[0.30,0.62], fl:[0.08,0.56], style:"cast"},
+  Keihin:   {w:1.40, up:0.65, dn:1.00, tw:0.75, th:1.55, cap:0.12, stem:0.15, knob:0.08, bowl:[0.15,1.25,1.60], air:[0.30,0.62], fl:[0.08,0.56], style:"cast"},
+  Dellorto: {w:1.50, up:0.65, dn:1.00, tw:0.80, th:1.45, cap:0.12, stem:0.15, knob:0.08, bowl:[0.15,1.35,1.50], air:[0.30,0.62], fl:[0.08,0.56], style:"cast"},
+  Polini:   {w:1.30, up:0.60, dn:0.90, tw:0.70, th:1.35, cap:0.10, stem:0.12, knob:0.08, bowl:[0.15,1.15,1.40], air:[0.25,0.60], fl:[0.08,0.56], style:"cast"},
+};
+PROP.Koso=PROP.Keihin; PROP.BGM=PROP.Keihin; PROP["?"]=PROP.Keihin;
 function carbOutline(X){
-  const d=X.d, L=X.len, b0=L, bL=1.55*d, hT=0.95*d, hB=0.55*d, g=[];
-  g.push(['poly', rrect(b0, b0+bL, -hB, hT, 2.5), BODY]);                                         // Billet-Block
-  g.push(['poly', rrect(b0+bL-1, b0+bL+0.32*d, -0.68*d, 0.68*d, 2), BODY]);                       // Luftfilterstutzen (größer als motorseitig)
-  g.push(['poly', rrect(b0-2, b0+bL+2, hT, hT+0.12*d, 1.5), BODY]);                              // Deckelplatte
-  g.push(['poly', rrect(b0+0.62*d, b0+0.92*d, hT+0.12*d, hT+0.22*d, 1), BODY]);                  // Clicker-Gehäuse
-  g.push(['poly', rrect(b0+0.72*d, b0+0.82*d, hT+0.22*d, hT+0.42*d, .5), BODY]);                 // Clicker-Schraube
-  g.push(['poly', rrect(b0+0.1*d, b0+bL-0.1*d, -hB-0.5*d, -hB+1, 3), BODY]);                     // Schwimmerkammer
-  g.push(['poly', rrect(b0+0.62*d, b0+0.78*d, -hB-0.5*d-0.1*d, -hB-0.5*d+.5, 1), BODY]);          // Ablass
-  g.push(['poly', rrect(b0-0.14*d, b0+0.01*d, 0.2*d, 0.42*d, 1), BODY]);                          // Benzinanschluss
-  g.push(['poly', rrect(b0-0.1*d, b0+0.01*d, -0.1*d, 0.08*d, 1), BODY]);                          // Leerlaufschraube
-  const ex=(M)=>line(M,b0+0.12*d,hT-0.08*d,b0+bL-0.12*d,hT-0.08*d)+line(M,b0+0.12*d,-hB+0.08*d,b0+bL-0.12*d,-hB+0.08*d)
-    +circ(M,b0+0.2*d,hT-0.2*d,0.035*d)+circ(M,b0+bL-0.2*d,hT-0.2*d,0.035*d)+circ(M,b0+0.2*d,-hB+0.2*d,0.035*d)+circ(M,b0+bL-0.2*d,-hB+0.2*d,0.035*d)
-    +line(M,b0+1,0,b0+bL+0.3*d,0,HID);
-  return {g, extra:ex, bbox:[[b0-0.15*d,-hB-0.62*d],[b0+bL+0.34*d,hT+0.44*d]]};
+  const d=X.d, b0=X.len, P=PROP[S.carb.m]||PROP["?"], g=[], R=0.05*d, D='fill="var(--fill)" stroke="var(--stroke)" stroke-width="1.1" stroke-linejoin="round"';
+  const zc=b0+P.w/2*d;                                                                          // Blockmitte
+  g.push(['poly', rrect(b0-P.fl[0]*d, b0+0.02*d, -P.fl[1]*d, P.fl[1]*d, 0.03*d), BODY]);         // Flanschring am Stutzen
+  g.push(['poly', rrect(b0, b0+P.w*d, -P.dn*d, P.up*d, R), BODY]);                               // Block
+  g.push(['poly', rrect(b0+P.w*d-0.02*d, b0+(P.w+P.air[0])*d, -P.air[1]*d, P.air[1]*d, 0.04*d), BODY]); // Luftfilterring
+  let top=P.up*d;
+  if(P.tw){ g.push(['poly', rrect(zc-P.tw/2*d, zc+P.tw/2*d, top-0.02*d, P.th*d, 0.04*d), BODY]); top=P.th*d; } // Schieberdom (Guss)
+  const cw = P.tw ? P.tw*d*1.1 : P.w*d*0.9;                                                      // Deckelbreite
+  g.push(['poly', rrect(zc-cw/2, zc+cw/2, top, top+P.cap*d, 0.03*d), BODY]);                     // Deckel
+  g.push(['poly', rrect(zc-0.07*d, zc+0.07*d, top+P.cap*d, top+(P.cap+P.stem)*d, 0.02*d), BODY]); // Clicker / Zugeinsteller
+  g.push(['poly', rrect(zc-0.17*d, zc+0.17*d, top+(P.cap+P.stem)*d, top+(P.cap+P.stem+P.knob)*d, 0.03*d), BODY]); // Knopf
+  g.push(['poly', rrect(b0+P.bowl[0]*d, b0+P.bowl[1]*d, -P.bowl[2]*d, -P.dn*d+0.02*d, R), D]);  // Schwimmerkammer
+  g.push(['poly', rrect(b0-0.18*d, b0+0.01*d, P.up*d-0.4*d, P.up*d-0.26*d, 0.02*d), BODY]);      // Benzinanschluss
+  const ex = P.style==="billet"
+    ? (M)=>line(M,zc,-P.dn*d+0.1*d,zc,P.up*d-0.1*d)+circ(M,b0+0.3*d,0.2*d,0.05*d)+circ(M,b0+0.3*d,-0.2*d,0.035*d)+line(M,b0+1,0,b0+(P.w+P.air[0])*d,0,HID)
+    : (M)=>line(M,b0+0.1*d,-P.dn*d+0.15*d,b0+P.w*d-0.1*d,-P.dn*d+0.15*d)+circ(M,b0+0.3*d,0.3*d,0.04*d)+line(M,b0+1,0,b0+(P.w+P.air[0])*d,0,HID);
+  const topAll=top+(P.cap+P.stem+P.knob)*d;
+  return {g, extra:ex, bbox:[[b0-0.2*d,-P.bowl[2]*d-0.02*d],[b0+(P.w+P.air[0])*d+0.02*d,topAll+0.02*d]]};
 }
 // Membran-Ansaugstutzen nach MRP/Egig: runder Stutzen, Rundflansch, Membranblock (Keil), Flanschplatte mit Schrauben, Motorgehäuse angedeutet
 function manifoldOutline(X){
@@ -368,10 +383,14 @@ function dimP(key,x1,y1,x2,y2,tx,pos){ const on=S.active===key||!S.active, c=on?
 const ext=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--dimq)" stroke-width=".6"/>`; // Maßhilfslinie
 
 function drawSide(svg, X, label, kind){
-  const d=X.d, r=d/2, W=360, H=310, cy=kind==="manifold"?112:104, sc=kind==="manifold"?80/d:76/d, x0=58; // Stutzen-Ø in px, freies Ende bei x0
+  const d=X.d, r=d/2, W=360, hasNut=X.nf!==0, H=hasNut?330:260, areaH=hasNut?210:244;     // Zeichenfläche oben, Detail A unten
   svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  const O0 = kind==="manifold" ? manifoldOutline(X) : carbOutline(X);
+  const zMin=-0.5*d-9, zMax=O0.bbox[1][0], rMin=Math.min(O0.bbox[0][1],-r-9), rMax=Math.max(O0.bbox[1][1],r+5);
+  const sc=Math.min((W-16)/(zMax-zMin), (areaH-16)/(rMax-rMin));
+  const x0=8+(-zMin)*sc + ((W-16)-(zMax-zMin)*sc)/2, cy=8+rMax*sc + ((areaH-16)-(rMax-rMin)*sc)/2;
   const M={X:z=>+(x0+z*sc).toFixed(1), Y:rr=>+(cy-rr*sc).toFixed(1), sc};
-  const O = kind==="manifold" ? manifoldOutline(X) : carbOutline(X);
+  const O = O0;
   let s=DEFS+axis(M,[[-9,0],[O.bbox[1][0],0]]);
   for(const [,pts,st] of O.g) s+=`<polygon points="${P2(M,pts)}" ${st}/>`;
   s+=O.extra(M);
@@ -381,7 +400,7 @@ function drawSide(svg, X, label, kind){
   s+=txt(W-8,14,label,"end","var(--muted)");
   // Hauptmaße: Ø links, Länge unten, Nutlage(n) oben
   const yT=M.Y(r), yB=M.Y(-r), xE=M.X(X.len);
-  s+=ext(x0-4,yT,x0-22,yT)+ext(x0-4,yB,x0-22,yB)+dimP("d",x0-16,yT,x0-16,yB,`Ø ${fmt(d)}`,"left");
+  s+=ext(x0-4,yT,x0-20,yT)+ext(x0-4,yB,x0-20,yB)+dimP("d",x0-14,yT,x0-14,yB,`Ø ${fmt(d)}`,"left");
   s+=ext(x0,yB+3,x0,yB+22)+ext(xE,yB+3,xE,yB+22)+dimP("len",x0,yB+16,xE,yB+16,fmt(X.len),"below");
   const pos=nutPositions(X).sort((a,b)=>a-b);
   if(pos.length){
@@ -389,7 +408,7 @@ function drawSide(svg, X, label, kind){
     const zEnd=X.np+X.nw+(pos.length>1?X.ng+X.nw:0)+1.5, xa=x0-3, xb=M.X(zEnd), ya=yT-6, yb=yT+0.3*d*sc;
     s+=`<rect x="${xa}" y="${ya}" width="${(xb-xa).toFixed(1)}" height="${(yb-ya).toFixed(1)}" fill="none" stroke="var(--dim)" stroke-width=".8" stroke-dasharray="3 2" rx="2"/>`+txt(xb+4,ya+10,"A","start","var(--dim)");
     // Detail A: Rechteck unten, Stutzenende links, Nuten als Schnitt mit Schraffur, Kettenmaß oben, Tiefe rechts
-    const DW=W-2*12, DH=96, dx=12, dy=H-DH-8, k=Math.min((DW-70)/(zEnd+1), 9);     // Zoomfaktor, max 9 px/mm
+    const DW=W-2*12, DH=104, dx=12, dy=H-DH-8, k=Math.min((DW-70)/(zEnd+1), 9);    // Zoomfaktor, max 9 px/mm
     const ox=dx+44, oy=dy+58;                                                         // Ursprung: Stutzenende (z=0), Außenkante (r)
     const DX=z=>+(ox+z*k).toFixed(1), DY=rr=>+(oy-(rr-r)*k).toFixed(1);
     const top=spigotTop(X).filter(([z])=>z<=zEnd+2).map(([z,rr])=>[DX(z),DY(rr)]);
