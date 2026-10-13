@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
 <title>Ansauggummi Konfigurator</title>
-<!-- XAG Konfigurator v0.6.9 (Mockup) | 2026-10-13 | _personal/xyger/ansauggummi/konfigurator.html -->
+<!-- XAG Konfigurator v0.7.1 | 2026-10-13 | _personal/xyger/ansauggummi/konfigurator.html -->
 <style>
   :root{
     --bg:#f4f5f7; --card:#ffffff; --ink:#1b1f24; --muted:#6b7280; --line:#e2e5ea;
@@ -69,7 +69,7 @@
 <div class="wrap">
   <div class="top"><h1 data-i="title"></h1><div class="lang" id="lang"><button data-l="de">DE</button><button data-l="en">EN</button><button data-l="it">IT</button></div></div>
   <div class="steps" id="steps"></div>
-  <div class="preview" id="preview"><svg id="sk1" viewBox="0 0 360 300" role="img"></svg><svg id="sk3" viewBox="0 0 360 240" role="img"></svg><svg id="sk4" viewBox="0 0 360 240" role="img"></svg></div>
+  <div class="preview" id="preview"><div class="chips" id="viewSel" hidden style="justify-content:flex-end;margin:0 0 6px"><button class="chip" data-v="0" data-i="v2d"></button><button class="chip" data-v="1" data-i="v3d"></button></div><svg id="sk1" viewBox="0 0 360 300" role="img"></svg><svg id="sk3" viewBox="0 0 360 240" role="img"></svg><svg id="sk4" viewBox="0 0 360 240" role="img"></svg><canvas id="c3d" width="720" height="480" hidden style="width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:10px;background:var(--bg);touch-action:none"></canvas></div>
 
   <!-- Schritt 0: Vergaser + Ansaugstutzen -->
   <section class="card" data-step="0">
@@ -129,9 +129,12 @@
     <input type="text" id="name" data-ph="name">
     <input type="text" id="bike" data-ph="bike">
     <input type="text" id="note" data-ph="note">
+    <div class="row" style="margin-top:8px"><label><span data-i="clamps"></span><small data-i="clampsS"></small></label><div class="chips" data-k="clamps"><button class="chip" data-v="2" data-i="yes"></button><button class="chip" data-v="0" data-i="no"></button></div></div>
+    <div class="row"><label><span data-i="wantStl"></span><small data-i="wantStlS"></small></label><div class="chips" data-k="wantStl"><button class="chip" data-v="1" data-i="yes"></button><button class="chip" data-v="0" data-i="no"></button></div></div>
     <div style="height:12px"></div>
     <pre class="summary" id="summary"></pre>
-    <div class="chips"><button class="btn primary" id="copy" data-i="copy"></button></div>
+    <div class="chips"><button class="btn primary" id="copy" data-i="copy"></button><button class="btn ghost" id="stl" data-i="stl"></button></div>
+    <p class="hint" data-i="stlHint"></p>
     <p class="hint" data-i="hint"></p>
   </section>
 
@@ -146,7 +149,7 @@ const BEND_MARGIN = 5.5; // gerade Endstücke, Biegezone dazwischen (SolidWorks 
 
 // ---------- Sprachen ----------
 const T = {
-de:{ nf3:"Wulst", ndH:"Höhe", nf:"Nut / Wulst am Stutzen", imprint:"Impressum · Datenschutz", bore:"Durchlass-Ø", boreS:"engste Stelle im Gummi, beim SmartCarb die größte messbare Höhe am Austritt", boreShape:"Durchlass-Form", round:"rund", heart:"Herzblatt", boreSC:"SmartCarb: Der Austritt ist herzblattförmig (einseitig gequetscht). Wir fertigen den Durchlass rund mit dem größten messbaren Durchmesser. Die Austrittskanten bleiben dadurch bewusst frei und wirken als Abrisskanten: Der Kraftstofffilm an der Wand reißt ab und zerstäubt. Ein herzblattförmiger Durchlass würde die Kanten abdecken, müsste exakt zum Vergaser ausgerichtet werden und wäre nicht mehr frei verdrehbar.", boreHeart:"Herzblatt-Form nur auf Anfrage, wir melden uns dazu.",carbSel:"Vergaser", series:"Reihe", size:"Größe", stSel:"Ansaugstutzen", model:"Modell", other:"Sonstiger", pairOk:"Vorlage geladen, du misst nur, was abweicht.", pairNone:"Für diese Paarung liegt noch keine Vorlage vor, bitte alles messen.", title:"Ansauggummi konfigurieren", s0h:"Womit fangen wir an?", s0p:"Vergaser und Ansaugstutzen antippen. Winkel kommt später.", own:"Eigene Maße",
+de:{ clamps:"Schellen mitbestellen", clampsS:"2 hochwertige Schlauchschellen passend zur Schellennut", stl:"STL herunterladen", stlHint:"STL-Download nur mit Freischaltcode von Xyger. Die Datei wird lokal im Browser erzeugt, nichts wird hochgeladen. Durchlass rund, Druck-Übermaß +0,2 mm, Einheit mm, Achse Z.", v2d:"Schnitt", v3d:"3D", wantStl:"STL-Datei gewünscht", wantStlS:"zum Selbstdrucken, Freischaltcode nach Absprache", codeAsk:"Freischaltcode eingeben:", codeBad:"Code ungültig.", withdraw:"Mit dem Download stimmst du zu, dass die Bereitstellung sofort beginnt und dein Widerrufsrecht damit erlischt. Fortfahren?", nf3:"Wulst", ndH:"Höhe", nf:"Nut / Wulst am Stutzen", imprint:"Impressum · Datenschutz", bore:"Durchlass-Ø", boreS:"engste Stelle im Gummi, beim SmartCarb die größte messbare Höhe am Austritt", boreShape:"Durchlass-Form", round:"rund", heart:"Herzblatt", boreSC:"SmartCarb: Der Austritt ist herzblattförmig (einseitig gequetscht). Wir fertigen den Durchlass rund mit dem größten messbaren Durchmesser. Die Austrittskanten bleiben dadurch bewusst frei und wirken als Abrisskanten: Der Kraftstofffilm an der Wand reißt ab und zerstäubt. Ein herzblattförmiger Durchlass würde die Kanten abdecken, müsste exakt zum Vergaser ausgerichtet werden und wäre nicht mehr frei verdrehbar.", boreHeart:"Herzblatt-Form nur auf Anfrage, wir melden uns dazu.",carbSel:"Vergaser", series:"Reihe", size:"Größe", stSel:"Ansaugstutzen", model:"Modell", other:"Sonstiger", pairOk:"Vorlage geladen, du misst nur, was abweicht.", pairNone:"Für diese Paarung liegt noch keine Vorlage vor, bitte alles messen.", title:"Ansauggummi konfigurieren", s0h:"Womit fangen wir an?", s0p:"Vergaser und Ansaugstutzen antippen. Winkel kommt später.", own:"Eigene Maße",
   s1h:"Vergaserstutzen messen", s1p:"Messschieber am Stutzen des Vergasers, auf 0,1 mm.", s2h:"Ansaugstutzen messen", s2p:"Messschieber am Ansaugstutzen des Motors, auf 0,1 mm.",
   mirror:"Wie Vergaserstutzen", mirrorS:"gleiche Maße auf der Motorseite", yes:"ja", no:"nein", d:"Außen-Ø", len:"Stutzenlänge", lenS:"vom Ende bis zum Anschlag",
   nf0:"keine", nf1:"halbrund", nf2:"eckig", nn:"Anzahl", np:"Lage", npS:"Stutzenende bis Nutanfang", nw:"Breite", nd:"Tiefe", ng:"Abstand zur 2. Nut", ngS:"Nutende bis nächster Nutanfang",
@@ -156,7 +159,7 @@ de:{ nf3:"Wulst", ndH:"Höhe", nf:"Nut / Wulst am Stutzen", imprint:"Impressum �
   hint:"Bitte ein Foto vom Stutzen mit Messschieber mitschicken. Druck-Übermaß und Toleranzen rechnen wir.", back:"Zurück", next:"Weiter", toReq:"Zur Anfrage",
   carb:"Vergaser", motor:"Motor", total:"Gesamtlänge", totalG:"Gesamtlänge Gummi", sumH:"Ansauggummi-Anfrage", sumA:"Vergaserstutzen", sumB:"Ansaugstutzen", sumLen:"Länge", sumNut:"Nut", sumPos:"Lage", sumW:"Breite", sumD:"Tiefe", sumGap:"Abstand", sumAng:"Winkel", sumClamp:"Schelle", sumName:"Name", sumBike:"Fahrzeug", sumNote:"Hinweis",
   copied:"Text kopiert.", copyFail:"Kopieren nicht möglich, bitte Text markieren.", noWa:"Mockup: WhatsApp-Nummer noch nicht hinterlegt." },
-en:{ nf3:"bead", ndH:"Height", nf:"Groove / bead on spigot", imprint:"Legal notice · Privacy", bore:"Bore Ø", boreS:"narrowest point in the rubber; on a SmartCarb the largest measurable height at the outlet", boreShape:"Bore shape", round:"round", heart:"heart-shaped", boreSC:"SmartCarb: the outlet is heart-shaped (flattened on one side). We make the bore round with the largest measurable diameter. The outlet edges stay deliberately exposed and act as tear-off edges: the fuel film on the wall breaks away and atomises. A heart-shaped bore would cover those edges, would need exact alignment to the carburettor and the rubber could no longer be rotated freely.", boreHeart:"Heart-shaped bore on request only, we will get back to you.",carbSel:"Carburettor", series:"Series", size:"Size", stSel:"Intake manifold", model:"Model", other:"Other", pairOk:"Template loaded, only measure what differs.", pairNone:"No template for this pairing yet, please measure everything.", title:"Configure intake rubber", s0h:"Where do we start?", s0p:"Tap your carburettor and intake manifold. Angle comes later.", own:"Custom dimensions",
+en:{ clamps:"Add hose clamps", clampsS:"2 high-quality clamps matching the clamp groove", stl:"Download STL", stlHint:"STL download requires an unlock code from Xyger. The file is generated locally in your browser, nothing is uploaded. Round bore, print oversize +0.2 mm, unit mm, axis Z.", v2d:"Section", v3d:"3D", wantStl:"STL file wanted", wantStlS:"for printing yourself, unlock code by arrangement", codeAsk:"Enter unlock code:", codeBad:"Invalid code.", withdraw:"By downloading you agree that delivery starts immediately and your right of withdrawal expires. Continue?", nf3:"bead", ndH:"Height", nf:"Groove / bead on spigot", imprint:"Legal notice · Privacy", bore:"Bore Ø", boreS:"narrowest point in the rubber; on a SmartCarb the largest measurable height at the outlet", boreShape:"Bore shape", round:"round", heart:"heart-shaped", boreSC:"SmartCarb: the outlet is heart-shaped (flattened on one side). We make the bore round with the largest measurable diameter. The outlet edges stay deliberately exposed and act as tear-off edges: the fuel film on the wall breaks away and atomises. A heart-shaped bore would cover those edges, would need exact alignment to the carburettor and the rubber could no longer be rotated freely.", boreHeart:"Heart-shaped bore on request only, we will get back to you.",carbSel:"Carburettor", series:"Series", size:"Size", stSel:"Intake manifold", model:"Model", other:"Other", pairOk:"Template loaded, only measure what differs.", pairNone:"No template for this pairing yet, please measure everything.", title:"Configure intake rubber", s0h:"Where do we start?", s0p:"Tap your carburettor and intake manifold. Angle comes later.", own:"Custom dimensions",
   s1h:"Measure carburettor spigot", s1p:"Calipers on the carburettor spigot, to 0.1 mm.", s2h:"Measure intake manifold spigot", s2p:"Calipers on the engine's intake spigot, to 0.1 mm.",
   mirror:"Same as carburettor spigot", mirrorS:"identical dimensions on the engine side", yes:"yes", no:"no", d:"Outer Ø", len:"Spigot length", lenS:"from the end to the stop",
   nf0:"none", nf1:"round", nf2:"square", nn:"Count", np:"Position", npS:"spigot end to groove edge", nw:"Width", nd:"Depth", ng:"Distance to 2nd groove", ngS:"groove end to next groove edge",
@@ -166,7 +169,7 @@ en:{ nf3:"bead", ndH:"Height", nf:"Groove / bead on spigot", imprint:"Legal noti
   hint:"Please attach a photo of the spigot with calipers. Print oversize and tolerances are on us.", back:"Back", next:"Next", toReq:"To request",
   carb:"Carburettor", motor:"Engine", total:"Overall length", totalG:"Rubber overall length", sumH:"Intake rubber request", sumA:"Carburettor spigot", sumB:"Intake spigot", sumLen:"length", sumNut:"groove", sumPos:"position", sumW:"width", sumD:"depth", sumGap:"Gap", sumAng:"angle", sumClamp:"clamp", sumName:"Name", sumBike:"Vehicle", sumNote:"Note",
   copied:"Text copied.", copyFail:"Copy failed, please select the text.", noWa:"Mockup: WhatsApp number not set yet." },
-it:{ nf3:"bordino", ndH:"Altezza", nf:"Gola / bordino sul raccordo", imprint:"Note legali · Privacy", bore:"Ø passaggio", boreS:"punto più stretto nel manicotto; sullo SmartCarb l'altezza massima misurabile all'uscita", boreShape:"Forma del passaggio", round:"tondo", heart:"a cuore", boreSC:"SmartCarb: l'uscita è a forma di cuore (schiacciata su un lato). Realizziamo il passaggio tondo con il diametro massimo misurabile. I bordi dell'uscita restano volutamente liberi e agiscono da spigoli di distacco: il film di carburante sulla parete si stacca e si nebulizza. Un passaggio a cuore coprirebbe quei bordi, richiederebbe un allineamento esatto al carburatore e il manicotto non sarebbe più orientabile liberamente.", boreHeart:"Forma a cuore solo su richiesta, ti ricontattiamo.",carbSel:"Carburatore", series:"Serie", size:"Misura", stSel:"Collettore di aspirazione", model:"Modello", other:"Altro", pairOk:"Modello caricato, misura solo ciò che differisce.", pairNone:"Nessun modello per questo abbinamento, misura tutto.", title:"Configura il manicotto di aspirazione", s0h:"Da dove iniziamo?", s0p:"Tocca il tuo carburatore e il collettore. L'angolo viene dopo.", own:"Misure personalizzate",
+it:{ clamps:"Aggiungi fascette", clampsS:"2 fascette di qualità adatte alla gola", stl:"Scarica STL", stlHint:"Il download STL richiede un codice di sblocco da Xyger. Il file viene generato localmente nel browser, nulla viene caricato. Passaggio tondo, sovradimensionamento +0,2 mm, unità mm, asse Z.", v2d:"Sezione", v3d:"3D", wantStl:"File STL desiderato", wantStlS:"per stampare in proprio, codice di sblocco su accordo", codeAsk:"Inserisci il codice di sblocco:", codeBad:"Codice non valido.", withdraw:"Scaricando accetti che la fornitura inizi subito e che il diritto di recesso decada. Continuare?", nf3:"bordino", ndH:"Altezza", nf:"Gola / bordino sul raccordo", imprint:"Note legali · Privacy", bore:"Ø passaggio", boreS:"punto più stretto nel manicotto; sullo SmartCarb l'altezza massima misurabile all'uscita", boreShape:"Forma del passaggio", round:"tondo", heart:"a cuore", boreSC:"SmartCarb: l'uscita è a forma di cuore (schiacciata su un lato). Realizziamo il passaggio tondo con il diametro massimo misurabile. I bordi dell'uscita restano volutamente liberi e agiscono da spigoli di distacco: il film di carburante sulla parete si stacca e si nebulizza. Un passaggio a cuore coprirebbe quei bordi, richiederebbe un allineamento esatto al carburatore e il manicotto non sarebbe più orientabile liberamente.", boreHeart:"Forma a cuore solo su richiesta, ti ricontattiamo.",carbSel:"Carburatore", series:"Serie", size:"Misura", stSel:"Collettore di aspirazione", model:"Modello", other:"Altro", pairOk:"Modello caricato, misura solo ciò che differisce.", pairNone:"Nessun modello per questo abbinamento, misura tutto.", title:"Configura il manicotto di aspirazione", s0h:"Da dove iniziamo?", s0p:"Tocca il tuo carburatore e il collettore. L'angolo viene dopo.", own:"Misure personalizzate",
   s1h:"Misura il raccordo del carburatore", s1p:"Calibro sul raccordo del carburatore, al decimo di mm.", s2h:"Misura il raccordo del collettore", s2p:"Calibro sul raccordo di aspirazione del motore, al decimo di mm.",
   mirror:"Come il raccordo carburatore", mirrorS:"stesse misure lato motore", yes:"sì", no:"no", d:"Ø esterno", len:"Lunghezza raccordo", lenS:"dall'estremità alla battuta",
   nf0:"nessuna", nf1:"tonda", nf2:"quadra", nn:"Numero", np:"Posizione", npS:"da estremità a inizio gola", nw:"Larghezza", nd:"Profondità", ng:"Distanza alla 2ª gola", ngS:"da fine gola a inizio gola successiva",
@@ -249,7 +252,7 @@ function loadPair(){ const p=PAIRS[pairKey()]||GENERIC; S.A={...p.A}; S.B={...p.
   S.mirror = JSON.stringify(S.A)===JSON.stringify(S.B)?1:0; S.known=!!PAIRS[pairKey()]; S.boreAuto=true; S.shape=0; }
 const LIM = {d:[15,70], len:[5,40], np:[1,30], nw:[1,6], nd:[0.2,2], ng:[2,15], gap:[0,60], angFree:[0,45], bore:[10,70]};
 
-const S = {step:0, carb:{m:"SmartCarb",r:"SC3",s:38}, st:{m:"Quattrini",v:"M200S"}, known:true, A:null, B:null, mirror:1, gap:15.5, ang:"0", angFree:10, hard:1, clamp:1, bore:40, boreAuto:true, shape:0, active:""};
+const S = {step:0, carb:{m:"SmartCarb",r:"SC3",s:38}, st:{m:"Quattrini",v:"M200S"}, known:true, A:null, B:null, mirror:1, gap:15.5, ang:"0", angFree:10, hard:1, clamp:1, bore:40, boreAuto:true, shape:0, wantStl:0, clamps:2, view3d:0, active:""};
 function cur(){ return S.step===2 ? S.B : S.A; }
 function angle(){ return S.ang==="free" ? S.angFree : parseFloat(S.ang); }
 function fmt(v){ const s=String(Math.round(v*10)/10); return LANG==="en" ? s : s.replace(".",","); }
@@ -280,8 +283,8 @@ function lipPts(X, r, zOf, dir){
   }
   return out;
 }
-function gummi(){
-  const w=WALL[S.hard], A=S.A, B=S.B, rA=A.d/2, rB=B.d/2, R=Math.max(rA,rB)+w, RL=R+LIP.h;
+function gummi(Ain, Bin){
+  const w=WALL[S.hard], A=Ain||S.A, B=Bin||S.B, rA=A.d/2, rB=B.d/2, R=Math.max(rA,rB)+w, RL=R+LIP.h;
   if(S.boreAuto) S.bore=Math.round((Math.min(A.d,B.d)-4)*10)/10;
   const rS=Math.min(S.bore, Math.min(A.d,B.d)-1)/2, tA=A.len, tB=B.len, L=total();
   const cw=CLAMP[S.clamp]; // Schellennut außen: Breite = Schellenbreite, Tiefe LIP.h, beginnt nach dem Endwulst
@@ -497,6 +500,62 @@ function drawGummi(svg){
   svg.innerHTML=s;
 }
 
+// ---------- STL ----------
+const OVERSIZE = 0.2; // Druck-Übermaß auf den Stutzen-Ø (steckbar)
+function stlMesh(N){ // Rotationskörper aus dem Längsschnitt, Biegung in der Y-Z-Ebene, Achse Z. Liefert Float32-Dreiecke (9 Werte je Dreieck)
+  N=N||120;
+  const A={...S.A, d:S.A.d+OVERSIZE}, B={...S.B, d:S.B.d+OVERSIZE}, P=gummi(A,B), Bd=bender(P,angle());
+  const prof=subdiv(P.pts).filter((pt,i,arr)=>{ const q=arr[(i+1)%arr.length]; return Math.abs(pt[0]-q[0])>1e-6||Math.abs(pt[1]-q[1])>1e-6; });
+  const n=prof.length, V=new Float64Array(n*N*3);
+  for(let i=0;i<n;i++){ const [z,r]=prof[i];
+    for(let k=0;k<N;k++){ const th=2*Math.PI*k/N, x=r*Math.cos(th), y=r*Math.sin(th); const [z2,y2]=Bd(z,y); const o=(i*N+k)*3; V[o]=x; V[o+1]=y2; V[o+2]=z2; } }
+  const tris=[]; const idx=(i,k)=>((i%n)*N+(k%N))*3;
+  for(let i=0;i<n;i++) for(let k=0;k<N;k++){ const a=idx(i,k), b=idx(i+1,k), c=idx(i+1,k+1), d=idx(i,k+1); tris.push(a,b,c, a,c,d); }
+  // Orientierung: Volumen über Divergenz, bei negativem Volumen alle Dreiecke umdrehen
+  let vol=0; for(let t=0;t<tris.length;t+=3){ const a=tris[t],b=tris[t+1],c=tris[t+2];
+    vol+=(V[a]*(V[b+1]*V[c+2]-V[b+2]*V[c+1]) - V[a+1]*(V[b]*V[c+2]-V[b+2]*V[c]) + V[a+2]*(V[b]*V[c+1]-V[b+1]*V[c]))/6; }
+  const flip=vol<0; const out=new Float32Array(tris.length*3); let o=0;
+  for(let t=0;t<tris.length;t+=3){ const ord=flip?[tris[t],tris[t+2],tris[t+1]]:[tris[t],tris[t+1],tris[t+2]]; for(const v of ord){ out[o++]=V[v]; out[o++]=V[v+1]; out[o++]=V[v+2]; } }
+  return {tris:out, count:tris.length/3, volume:Math.abs(vol), verts:n*N};
+}
+function stlBlob(){
+  const m=stlMesh(), nT=m.count, buf=new ArrayBuffer(84+nT*50), dv=new DataView(buf), hdr="XAG Konfigurator "+code();
+  for(let i=0;i<80&&i<hdr.length;i++) dv.setUint8(i,hdr.charCodeAt(i)&127); dv.setUint32(80,nT,true);
+  let o=84; const T=m.tris;
+  for(let t=0;t<nT;t++){ const b=t*9, ax=T[b+3]-T[b],ay=T[b+4]-T[b+1],az=T[b+5]-T[b+2], bx=T[b+6]-T[b],by=T[b+7]-T[b+1],bz=T[b+8]-T[b+2];
+    let nx=ay*bz-az*by, ny=az*bx-ax*bz, nz=ax*by-ay*bx; const l=Math.hypot(nx,ny,nz)||1; nx/=l; ny/=l; nz/=l;
+    dv.setFloat32(o,nx,true); dv.setFloat32(o+4,ny,true); dv.setFloat32(o+8,nz,true); o+=12;
+    for(let v=0;v<9;v++){ dv.setFloat32(o,T[b+v],true); o+=4; } dv.setUint16(o,0,true); o+=2; }
+  return new Blob([buf],{type:"model/stl"});
+}
+function stlName(){ const f=v=>String(Math.round(v*10)/10).replace(".",","); return `XAG_${f(S.A.d)}-${f(S.A.len)}_${f(S.B.d)}-${f(S.B.len)}_L${f(total())}_${f(angle())}deg.stl`; }
+
+// ---------- 3D-Vorschau (Canvas, Painter-Sortierung, flächige Schattierung) ----------
+const V3={yaw:-0.6, pitch:0.5, mesh:null, key:""};
+function draw3d(){
+  const cv=document.getElementById("c3d"), ctx=cv.getContext("2d"), W=cv.width, H=cv.height;
+  const k=code()+"|"+S.hard+S.clamp+S.bore+S.ang+S.angFree; if(V3.key!==k){ V3.mesh=stlMesh(40); V3.key=k; }
+  const T=V3.mesh.tris, n=V3.mesh.count;
+  const cy=Math.cos(V3.yaw), sy=Math.sin(V3.yaw), cp=Math.cos(V3.pitch), sp=Math.sin(V3.pitch);
+  let minZ=1e9,maxZ=-1e9; for(let i=2;i<T.length;i+=3){ if(T[i]<minZ)minZ=T[i]; if(T[i]>maxZ)maxZ=T[i]; } const zc=(minZ+maxZ)/2;
+  const rot=(x,y,z)=>{ z-=zc; const x1=x*cy+z*sy, z1=-x*sy+z*cy; const y1=y*cp-z1*sp, z2=y*sp+z1*cp; return [x1,y1,z2]; };
+  const P=new Float32Array(n*9); let ext=1;
+  for(let i=0;i<n*9;i+=3){ const [x,y,z]=rot(T[i],T[i+1],T[i+2]); P[i]=x; P[i+1]=y; P[i+2]=z; ext=Math.max(ext,Math.abs(x),Math.abs(y)); }
+  const sc=Math.min(W,H)/2/ext*0.9, ox=W/2, oy=H/2, L=[0.4,0.6,0.7], ll=Math.hypot(...L);
+  const order=new Array(n); for(let t=0;t<n;t++){ const b=t*9; order[t]=[ (P[b+2]+P[b+5]+P[b+8])/3, t ]; } order.sort((a,b)=>a[0]-b[0]);
+  const css=getComputedStyle(document.documentElement), base=css.getPropertyValue("--fill").trim()||"#d9dde3", dark=matchMedia("(prefers-color-scheme: dark)").matches;
+  ctx.clearRect(0,0,W,H);
+  for(const [,t] of order){ const b=t*9, ax=P[b+3]-P[b],ay=P[b+4]-P[b+1],az=P[b+5]-P[b+2], bx=P[b+6]-P[b],by=P[b+7]-P[b+1],bz=P[b+8]-P[b+2];
+    const nx=ay*bz-az*by, ny=az*bx-ax*bz, nz=ax*by-ay*bx, nl=Math.hypot(nx,ny,nz)||1; if(nz<0) continue;   // Rückseiten weg
+    const sh=0.35+0.65*Math.max(0,(nx*L[0]+ny*L[1]+nz*L[2])/(nl*ll)); const g=Math.round((dark?150:205)*sh)+(dark?30:30);
+    ctx.fillStyle=`rgb(${g},${g+4},${g+10})`; ctx.strokeStyle=ctx.fillStyle;
+    ctx.beginPath(); ctx.moveTo(ox+P[b]*sc, oy-P[b+1]*sc); ctx.lineTo(ox+P[b+3]*sc, oy-P[b+4]*sc); ctx.lineTo(ox+P[b+6]*sc, oy-P[b+7]*sc); ctx.closePath(); ctx.fill(); ctx.stroke(); }
+}
+{ const cv=document.getElementById("c3d"); let drag=null;
+  cv.addEventListener("pointerdown",e=>{ drag=[e.clientX,e.clientY]; cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener("pointermove",e=>{ if(!drag) return; V3.yaw+=(e.clientX-drag[0])*0.01; V3.pitch=Math.max(-1.5,Math.min(1.5,V3.pitch+(e.clientY-drag[1])*0.01)); drag=[e.clientX,e.clientY]; draw3d(); });
+  cv.addEventListener("pointerup",()=>drag=null); cv.addEventListener("pointercancel",()=>drag=null); }
+
 // ---------- Text ----------
 const NFK=["nf0","nf1","nf2","nf3"];
 function sideTxt(X){ return `Ø ${fmt(X.d)}, ${t("sumLen")} ${fmt(X.len)}, ${t("sumNut")} ${t(NFK[X.nf])}`+(X.nf?` ${X.nn}x, ${t("sumPos")} ${fmt(X.np)}, ${t("sumW")} ${fmt(X.nw)}, ${t("sumD")} ${fmt(X.nd)}`+(X.nn===2?`, ${t("ng")} ${fmt(X.ng)}`:""):""); }
@@ -509,6 +568,7 @@ function summary(){ return [
   `${t("sumB")}: ${sideTxt(S.B)}`,
   `${t("sumGap")} ${fmt(S.gap)} mm, ${t("total")} ${fmt(total())} mm, ${t("sumAng")} ${fmt(angle())}°, ${t(S.hard?"hardV":"soft")}, ${t("sumClamp")} ${t(S.clamp?"wide":"narrow")}, ${t("bore")} ${fmt(S.bore)} ${t(S.shape?"heart":"round")}`,
   `Code: ${code()}`,
+  `STL: ${S.wantStl? t("yes") : t("no")} | ${t("clamps")}: ${S.clamps? "2" : t("no")}`,
   `${t("sumName")}: ${v("name")} | ${t("sumBike")}: ${v("bike")}${v("note")?" | "+t("sumNote")+": "+v("note"):""}` ].join("\n"); }
 
 // ---------- Render ----------
@@ -542,12 +602,15 @@ function render(){
   ["sk1","sk3","sk4"].forEach(id=>{ const on=(id==="sk1"&&(S.step===1||S.step===2))||(id==="sk3"&&S.step===3)||(id==="sk4"&&S.step===4); const el=document.getElementById(id); if(on) el.removeAttribute("hidden"); else el.setAttribute("hidden",""); });
   if(S.step===1||S.step===2) drawSide(document.getElementById("sk1"), X, t(onB?"motor":"carb"), onB?"manifold":"carb");
   if(S.step===3) drawInstall(document.getElementById("sk3"));
+  document.getElementById("viewSel").hidden = S.step!==4; const c3=document.getElementById("c3d"); c3.hidden = !(S.step===4 && S.view3d===1); if(S.step===4 && S.view3d===1) document.getElementById("sk4").setAttribute("hidden","");
+  if(S.step===4 && S.view3d===1) draw3d();
   if(S.step===4){ if(S.boreAuto) S.bore=Math.round((Math.min(S.A.d,S.B.d)-4)*10)/10; drawGummi(document.getElementById("sk4")); const bi=document.getElementById("boreInfo"); bi.textContent = S.shape===1 ? t("boreHeart") : (S.carb.m==="SmartCarb" ? t("boreSC") : ""); bi.hidden = !bi.textContent; }
   if(S.step===5) document.getElementById("summary").textContent=summary();
 }
 
 // ---------- Events ----------
 document.getElementById("lang").addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) setLang(b.dataset.l); });
+document.getElementById("viewSel").addEventListener("click",e=>{ const b=e.target.closest(".chip"); if(b){ S.view3d=+b.dataset.v; render(); } });
 const pick=(id,fn)=>document.getElementById(id).addEventListener("click",e=>{ const b=e.target.closest(".chip"); if(!b) return; fn(b.dataset.v); loadPair(); render(); });
 pick("carbM",v=>{ const row=CARBS.find(c=>c.m===v); S.carb={m:v,r:row.r,s:row.s[0]}; });
 pick("carbR",v=>{ const row=CARBS.find(c=>c.m===S.carb.m&&c.r===v); S.carb={m:S.carb.m,r:v,s:row.s[0]}; });
@@ -575,9 +638,17 @@ document.querySelectorAll(".chips[data-k]").forEach(el=>el.addEventListener("cli
 document.getElementById("back").addEventListener("click",()=>{ S.step=Math.max(0,S.step-1); S.active=""; render(); window.scrollTo(0,0); });
 document.getElementById("next").addEventListener("click",()=>{ S.step=Math.min(STEPS-1,S.step+1); S.active=""; render(); window.scrollTo(0,0); });
 ["name","bike","note"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{ document.getElementById("summary").textContent=summary(); }));
+// Freischaltcodes als SHA-256 (Großbuchstaben). Neue Codes mit _pages/code.ps1 erzeugen, Hash hier eintragen.
+const CODES = ["4321f879225103a3e8e1f13de4057b3028e220c0b9ccaefc8dada86fb1c7e90f"];
+async function sha256(t){ const b=await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join(""); }
+async function unlocked(){ try{ if(localStorage.getItem("xag_unlock")==="1") return true; }catch(e){}
+  const c=(prompt(t("codeAsk"))||"").trim().toUpperCase(); if(!c) return false;
+  if(CODES.includes(await sha256(c))){ try{ localStorage.setItem("xag_unlock","1"); }catch(e){} return true; } alert(t("codeBad")); return false; }
+document.getElementById("stl").addEventListener("click",async()=>{ if(!(await unlocked())) return; if(!confirm(t("withdraw"))) return; const a=document.createElement("a"); a.href=URL.createObjectURL(stlBlob()); a.download=stlName(); document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); });
 document.getElementById("copy").addEventListener("click",async()=>{ try{ await navigator.clipboard.writeText(summary()); alert(t("copied")); }catch(e){ alert(t("copyFail")); } });
 loadPair();
-{ const m=location.hash.match(/step=(\d)/); if(m) S.step=Math.min(STEPS-1,+m[1]); const a=location.hash.match(/ang=([\d.]+)/); if(a){ S.ang="free"; S.angFree=+a[1]; } if(/q=2/.test(location.hash)){ S.carb={m:"SmartCarb",r:"SC2",s:40}; S.st={m:"Quattrini",v:"M200S"}; loadPair(); }
+{ const m=location.hash.match(/step=(\d)/); if(m) S.step=Math.min(STEPS-1,+m[1]); const a=location.hash.match(/ang=([\d.]+)/); if(a){ S.ang="free"; S.angFree=+a[1]; } if(/v3d/.test(location.hash)) S.view3d=1;
+  if(/q=2/.test(location.hash)){ S.carb={m:"SmartCarb",r:"SC2",s:40}; S.st={m:"Quattrini",v:"M200S"}; loadPair(); }
   if(/q=1/.test(location.hash)){ S.carb={m:"SmartCarb",r:"SC2",s:40}; S.st={m:"Quattrini",v:"M200S"}; loadPair(); S.mirror=0; S.B.nf=3; S.B.nd=1; S.B.len=30; S.B.np=3; S.B.nw=3; } }
 setLang(detectLang());
 </script>
