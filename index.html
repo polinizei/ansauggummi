@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
 <title>Ansauggummi Konfigurator</title>
-<!-- XAG Konfigurator v0.6.5 (Mockup) | 2026-10-13 | _personal/xyger/ansauggummi/konfigurator.html -->
+<!-- XAG Konfigurator v0.6.6 (Mockup) | 2026-10-13 | _personal/xyger/ansauggummi/konfigurator.html -->
 <style>
   :root{
     --bg:#f4f5f7; --card:#ffffff; --ink:#1b1f24; --muted:#6b7280; --line:#e2e5ea;
@@ -367,22 +367,28 @@ function carbOutline(X){
 // wedge [Länge, r Start, r Ende] Membranblock (0 = keiner), plate [Dicke, halbe Höhe] Flanschplatte, case [Länge, halbe Höhe] Motorgehäuse angedeutet.
 // Quattrini aus Foto M200S (2026-10-14): langes Rohr, Flanschplatte direkt am Rohr, Membran im Gehäuse. Übrige vorläufig (MRP-Membranstutzen als Vorlage).
 const MPROP = {
-  Quattrini:{wedge:0, plate:[0.14,1.05], case:[0.35,0.85], ring:0},
-  Egig:     {wedge:[0.65,0.62,0.95], plate:[0.13,1.15], case:[0.32,1.0], ring:[0.1,0.72]},
-  MRP:      {wedge:[0.65,0.62,0.95], plate:[0.13,1.15], case:[0.32,1.0], ring:[0.1,0.72]},
-  Polini:   {wedge:[0.5,0.6,0.85],  plate:[0.12,1.0],  case:[0.32,0.9], ring:[0.08,0.7]},
-  Original: {wedge:0, plate:[0.12,0.9],  case:[0.35,0.8], ring:0},
+  Quattrini:{tube:1.2, wedge:0, plate:[0.14,1.05], reed:[0.6,0.55], case:[0.85,0.85], ring:0},
+  Egig:     {tube:0, wedge:[0.65,0.62,0.95], plate:[0.13,1.15], reed:0, case:[0.32,1.0], ring:[0.1,0.72]},
+  MRP:      {tube:0, wedge:[0.65,0.62,0.95], plate:[0.13,1.15], reed:0, case:[0.32,1.0], ring:[0.1,0.72]},
+  Polini:   {tube:0, wedge:[0.5,0.6,0.85],  plate:[0.12,1.0],  reed:0, case:[0.32,0.9], ring:[0.08,0.7]},
+  Original: {tube:0.6, wedge:0, plate:[0.12,0.9],  reed:0, case:[0.35,0.8], ring:0},
 };
-const MDEF = {wedge:[0.6,0.62,0.9], plate:[0.13,1.05], case:[0.32,0.95], ring:[0.08,0.7]};
+const MDEF = {tube:0, wedge:[0.6,0.62,0.9], plate:[0.13,1.05], reed:0, case:[0.32,0.95], ring:[0.08,0.7]};
+// tube: Rohr läuft hinter dem Steckbereich weiter (Länge relativ d), reed: Membranblock hinter dem Flansch im Gehäuse [Länge, halbe Höhe]
 function manifoldOutline(X){
-  const d=X.d, b0=X.len, P=MPROP[S.st.m]||MDEF, g=[]; let z=b0;
-  if(P.ring){ g.push(['poly', rrect(b0, b0+P.ring[0]*d, -P.ring[1]*d, P.ring[1]*d, 1.5), BODY]); z=b0+P.ring[0]*d; }   // Rundflansch am Stutzen
-  if(P.wedge){ g.push(['poly', [[z,P.wedge[1]*d],[z+P.wedge[0]*d,P.wedge[2]*d],[z+P.wedge[0]*d,-P.wedge[2]*d],[z,-P.wedge[1]*d]], BODY]); z+=P.wedge[0]*d; } // Membranblock, keilförmig
-  const zp=z; g.push(['poly', rrect(zp, zp+P.plate[0]*d, -P.plate[1]*d, P.plate[1]*d, 1.5), BODY]); z+=P.plate[0]*d;        // Flanschplatte
+  const d=X.d, b0=X.len, r=d/2, P=MPROP[S.st.m]||MDEF, g=[]; let z=b0;
+  if(P.tube){ g.push(['poly', rrect(b0-0.5, b0+P.tube*d, -r, r, 0.5), BODY]); z=b0+P.tube*d; }                      // Rohr bis zum Flansch
+  if(P.ring){ g.push(['poly', rrect(z, z+P.ring[0]*d, -P.ring[1]*d, P.ring[1]*d, 1.5), BODY]); z+=P.ring[0]*d; }      // Rundflansch am Stutzen
+  if(P.wedge){ g.push(['poly', [[z,P.wedge[1]*d],[z+P.wedge[0]*d,P.wedge[2]*d],[z+P.wedge[0]*d,-P.wedge[2]*d],[z,-P.wedge[1]*d]], BODY]); z+=P.wedge[0]*d; } // Membranblock vor dem Flansch
+  const zp=z; g.push(['poly', rrect(zp, zp+P.plate[0]*d, -P.plate[1]*d, P.plate[1]*d, 1.5), BODY]); z+=P.plate[0]*d;  // Flanschplatte
   g.push(['poly', rrect(z, z+P.case[0]*d, -P.case[1]*d, P.case[1]*d, 1), 'fill="var(--hatch)" stroke="var(--stroke)" stroke-width=".8" opacity=".5"']); // Motorgehäuse
-  const zEnd=z+P.case[0]*d;
+  if(P.reed) g.push(['poly', rrect(z+0.05*d, z+(0.05+P.reed[0])*d, -P.reed[1]*d, P.reed[1]*d, 1), BODY]);             // Membranblock im Gehäuse
+  const zEnd=z+P.case[0]*d, zr=z+0.05*d;
   const ex=(M)=>circ(M,zp+P.plate[0]*d/2,P.plate[1]*d-0.17*d,0.045*d)+circ(M,zp+P.plate[0]*d/2,-P.plate[1]*d+0.17*d,0.045*d)
-    +(P.wedge? line(M,b0+0.2*d,0.5*d,zp-0.05*d,0.25*d)+line(M,b0+0.2*d,-0.5*d,zp-0.05*d,-0.25*d)+line(M,b0+0.2*d,0.5*d,b0+0.2*d,-0.5*d) : line(M,b0+2,0.42*d,zp-1,0.42*d,HID)+line(M,b0+2,-0.42*d,zp-1,-0.42*d,HID))
+    +(P.tube? line(M,b0,-r-2,b0,r+2,HID) : "")                                                                            // Ende Steckbereich
+    +(P.wedge? line(M,b0+0.2*d,0.5*d,zp-0.05*d,0.25*d)+line(M,b0+0.2*d,-0.5*d,zp-0.05*d,-0.25*d)+line(M,b0+0.2*d,0.5*d,b0+0.2*d,-0.5*d) : "")
+    +(P.reed? line(M,zr+0.05*d,P.reed[1]*d*0.9,zr+P.reed[0]*d*0.95,0.08*d)+line(M,zr+0.05*d,-P.reed[1]*d*0.9,zr+P.reed[0]*d*0.95,-0.08*d)+line(M,zr+0.05*d,P.reed[1]*d*0.9,zr+0.05*d,-P.reed[1]*d*0.9) : "")
+    +(!P.wedge&&!P.reed? line(M,b0+2,0.42*d,zp-1,0.42*d,HID)+line(M,b0+2,-0.42*d,zp-1,-0.42*d,HID) : "")
     +line(M,b0+1,0,zEnd,0,HID);
   return {g, extra:ex, bbox:[[b0-2,-Math.max(P.plate[1],P.case[1])*d-0.05*d],[zEnd+0.02*d,Math.max(P.plate[1],P.case[1])*d+0.05*d]]};
 }
