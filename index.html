@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
 <title>Ansauggummi Konfigurator</title>
-<!-- XAG Konfigurator v0.6.6 (Mockup) | 2026-10-13 | _personal/xyger/ansauggummi/konfigurator.html -->
+<!-- XAG Konfigurator v0.6.8 (Mockup) | 2026-10-13 | _personal/xyger/ansauggummi/konfigurator.html -->
 <style>
   :root{
     --bg:#f4f5f7; --card:#ffffff; --ink:#1b1f24; --muted:#6b7280; --line:#e2e5ea;
@@ -239,12 +239,16 @@ const PAIRS = {
   "Polini CP 24|Polini Drehschieber":    {A:side(29.8,16,1,1,3.4,2.3,0.5,3.5), B:side(34.6,15,1,1,3.4,2.3,0.5,3.5),   gap:7,    ang:0},
 };
 const GENERIC = {A:side(40,15,1,1,3.9,2.3,0.5,3.5), B:side(40,15,1,1,3.9,2.3,0.5,3.5), gap:10, ang:0};
+// Kit-Vorbelegung (proportional zum Ø, aus Fotos): Quattrini = Wulst am Rohrende, Steckbereich 0,45 d (Foto M200S 2026-10-14)
+const KITDEF = { Quattrini:(d)=>side(d, Math.round(0.45*d), 3, 1, 1.5, 3.0, 1.0, 3.5) };
+const CARBDEF = { SmartCarb:(d)=>side(d, 15, 2, 1, 3.4, 2.3, 0.5, 3.5) };   // SmartCarb: eckige Nut
 const carbName = ()=> S.carb.m==="?" ? t("other") : [S.carb.m,S.carb.r,S.carb.s||""].filter(Boolean).join(" ");
 const stName   = ()=> S.st.m==="?"   ? t("other") : [S.st.m,S.st.v].filter(Boolean).join(" ");
 const pairKey  = ()=> `${[S.carb.m,S.carb.r,S.carb.s||""].filter(Boolean).join(" ")}|${[S.st.m,S.st.v].filter(Boolean).join(" ")}`;
 const pname    = ()=> `${carbName()} ↔ ${stName()}`;
 function loadPair(){ const p=PAIRS[pairKey()]||GENERIC; S.A={...p.A}; S.B={...p.B}; S.gap=p.gap; S.ang=String(p.ang);
-  S.mirror = JSON.stringify(p.A)===JSON.stringify(p.B)?1:0; S.known=!!PAIRS[pairKey()]; S.boreAuto=true; S.shape=0; }
+  if(!PAIRS[pairKey()]){ if(CARBDEF[S.carb.m]) S.A=CARBDEF[S.carb.m](S.A.d); if(KITDEF[S.st.m]) S.B=KITDEF[S.st.m](S.B.d); }
+  S.mirror = JSON.stringify(S.A)===JSON.stringify(S.B)?1:0; S.known=!!PAIRS[pairKey()]; S.boreAuto=true; S.shape=0; }
 const LIM = {d:[15,70], len:[5,40], np:[1,30], nw:[1,6], nd:[0.2,2], ng:[2,15], gap:[0,60], angFree:[0,45], bore:[10,70]};
 
 const S = {step:0, carb:{m:"SmartCarb",r:"SC3",s:38}, st:{m:"Aprilia",v:""}, known:true, A:null, B:null, mirror:1, gap:15.5, ang:"0", angFree:10, hard:1, clamp:1, bore:40, boreAuto:true, shape:0, active:""};
@@ -367,17 +371,23 @@ function carbOutline(X){
 // wedge [Länge, r Start, r Ende] Membranblock (0 = keiner), plate [Dicke, halbe Höhe] Flanschplatte, case [Länge, halbe Höhe] Motorgehäuse angedeutet.
 // Quattrini aus Foto M200S (2026-10-14): langes Rohr, Flanschplatte direkt am Rohr, Membran im Gehäuse. Übrige vorläufig (MRP-Membranstutzen als Vorlage).
 const MPROP = {
-  Quattrini:{tube:1.2, wedge:0, plate:[0.14,1.05], reed:[0.6,0.55], case:[0.85,0.85], ring:0},
+  Quattrini:{tubeTotal:2.2, wedge:0, plate:[0.14,1.05], reed:[0.6,0.55], case:[0.85,0.85], ring:0},
   Egig:     {tube:0, wedge:[0.65,0.62,0.95], plate:[0.13,1.15], reed:0, case:[0.32,1.0], ring:[0.1,0.72]},
   MRP:      {tube:0, wedge:[0.65,0.62,0.95], plate:[0.13,1.15], reed:0, case:[0.32,1.0], ring:[0.1,0.72]},
   Polini:   {tube:0, wedge:[0.5,0.6,0.85],  plate:[0.12,1.0],  reed:0, case:[0.32,0.9], ring:[0.08,0.7]},
-  Original: {tube:0.6, wedge:0, plate:[0.12,0.9],  reed:0, case:[0.35,0.8], ring:0},
+  Original: {tubeTotal:1.4, wedge:0, plate:[0.12,0.9],  reed:0, case:[0.35,0.8], ring:0},
 };
 const MDEF = {tube:0, wedge:[0.6,0.62,0.9], plate:[0.13,1.05], reed:0, case:[0.32,0.95], ring:[0.08,0.7]};
 // tube: Rohr läuft hinter dem Steckbereich weiter (Länge relativ d), reed: Membranblock hinter dem Flansch im Gehäuse [Länge, halbe Höhe]
 function manifoldOutline(X){
   const d=X.d, b0=X.len, r=d/2, P=MPROP[S.st.m]||MDEF, g=[]; let z=b0;
-  if(P.tube){ g.push(['poly', rrect(b0-0.5, b0+P.tube*d, -r, r, 0.5), BODY]); z=b0+P.tube*d; }                      // Rohr bis zum Flansch
+  let brk=""; const tube = P.tubeTotal ? Math.max(0.6*d, P.tubeTotal*d - b0) : 0;   // Rohrfortsetzung = Gesamtlänge (aus Foto, relativ d) minus Steckbereich
+  if(tube){ // Rohr bis zum Flansch, mit Bruchkanten gekürzt dargestellt (Steckbereich bleibt in voller Größe)
+    const t1=b0+0.3*d, gap=0.16*d, t2=t1+gap, zEndT=b0+Math.min(tube,0.95*d);
+    g.push(['poly', rrect(b0-0.5, t1, -r, r, 0.5), BODY]); g.push(['poly', rrect(t2, zEndT, -r, r, 0.5), BODY]); z=zEndT;
+    const wav=(zz)=>{ const pts=[]; for(let i=0;i<=8;i++){ const rr=-r-1+(2*r+2)*i/8; pts.push([zz+(i%2?0.05*d:-0.05*d)*0.6, rr]); } return pts; };
+    brk=(M)=>`<polyline points="${P2(M,wav(t1+0.02*d))}" fill="none" stroke="var(--stroke)" stroke-width="1"/><polyline points="${P2(M,wav(t2-0.02*d))}" fill="none" stroke="var(--stroke)" stroke-width="1"/>`;
+  }
   if(P.ring){ g.push(['poly', rrect(z, z+P.ring[0]*d, -P.ring[1]*d, P.ring[1]*d, 1.5), BODY]); z+=P.ring[0]*d; }      // Rundflansch am Stutzen
   if(P.wedge){ g.push(['poly', [[z,P.wedge[1]*d],[z+P.wedge[0]*d,P.wedge[2]*d],[z+P.wedge[0]*d,-P.wedge[2]*d],[z,-P.wedge[1]*d]], BODY]); z+=P.wedge[0]*d; } // Membranblock vor dem Flansch
   const zp=z; g.push(['poly', rrect(zp, zp+P.plate[0]*d, -P.plate[1]*d, P.plate[1]*d, 1.5), BODY]); z+=P.plate[0]*d;  // Flanschplatte
@@ -385,10 +395,10 @@ function manifoldOutline(X){
   if(P.reed) g.push(['poly', rrect(z+0.05*d, z+(0.05+P.reed[0])*d, -P.reed[1]*d, P.reed[1]*d, 1), BODY]);             // Membranblock im Gehäuse
   const zEnd=z+P.case[0]*d, zr=z+0.05*d;
   const ex=(M)=>circ(M,zp+P.plate[0]*d/2,P.plate[1]*d-0.17*d,0.045*d)+circ(M,zp+P.plate[0]*d/2,-P.plate[1]*d+0.17*d,0.045*d)
-    +(P.tube? line(M,b0,-r-2,b0,r+2,HID) : "")                                                                            // Ende Steckbereich
+    +(tube? line(M,b0,-r-2,b0,r+2,HID)+brk(M) : "")                                                                     // Ende Steckbereich + Bruchkanten
     +(P.wedge? line(M,b0+0.2*d,0.5*d,zp-0.05*d,0.25*d)+line(M,b0+0.2*d,-0.5*d,zp-0.05*d,-0.25*d)+line(M,b0+0.2*d,0.5*d,b0+0.2*d,-0.5*d) : "")
     +(P.reed? line(M,zr+0.05*d,P.reed[1]*d*0.9,zr+P.reed[0]*d*0.95,0.08*d)+line(M,zr+0.05*d,-P.reed[1]*d*0.9,zr+P.reed[0]*d*0.95,-0.08*d)+line(M,zr+0.05*d,P.reed[1]*d*0.9,zr+0.05*d,-P.reed[1]*d*0.9) : "")
-    +(!P.wedge&&!P.reed? line(M,b0+2,0.42*d,zp-1,0.42*d,HID)+line(M,b0+2,-0.42*d,zp-1,-0.42*d,HID) : "")
+    +(!P.wedge&&!P.reed&&!tube? line(M,b0+2,0.42*d,zp-1,0.42*d,HID)+line(M,b0+2,-0.42*d,zp-1,-0.42*d,HID) : "")
     +line(M,b0+1,0,zEnd,0,HID);
   return {g, extra:ex, bbox:[[b0-2,-Math.max(P.plate[1],P.case[1])*d-0.05*d],[zEnd+0.02*d,Math.max(P.plate[1],P.case[1])*d+0.05*d]]};
 }
@@ -569,7 +579,8 @@ document.getElementById("next").addEventListener("click",()=>{ S.step=Math.min(S
 ["name","bike","note"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{ document.getElementById("summary").textContent=summary(); }));
 document.getElementById("copy").addEventListener("click",async()=>{ try{ await navigator.clipboard.writeText(summary()); alert(t("copied")); }catch(e){ alert(t("copyFail")); } });
 loadPair();
-{ const m=location.hash.match(/step=(\d)/); if(m) S.step=Math.min(STEPS-1,+m[1]); const a=location.hash.match(/ang=([\d.]+)/); if(a){ S.ang="free"; S.angFree=+a[1]; } if(/q=1/.test(location.hash)){ S.carb={m:"SmartCarb",r:"SC2",s:40}; S.st={m:"Quattrini",v:"M200S"}; loadPair(); S.mirror=0; S.B.nf=3; S.B.nd=1; S.B.len=30; S.B.np=3; S.B.nw=3; } }
+{ const m=location.hash.match(/step=(\d)/); if(m) S.step=Math.min(STEPS-1,+m[1]); const a=location.hash.match(/ang=([\d.]+)/); if(a){ S.ang="free"; S.angFree=+a[1]; } if(/q=2/.test(location.hash)){ S.carb={m:"SmartCarb",r:"SC2",s:40}; S.st={m:"Quattrini",v:"M200S"}; loadPair(); }
+  if(/q=1/.test(location.hash)){ S.carb={m:"SmartCarb",r:"SC2",s:40}; S.st={m:"Quattrini",v:"M200S"}; loadPair(); S.mirror=0; S.B.nf=3; S.B.nd=1; S.B.len=30; S.B.np=3; S.B.nw=3; } }
 setLang(detectLang());
 </script>
 </body>
