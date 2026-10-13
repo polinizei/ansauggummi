@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
 <title>Ansauggummi Konfigurator</title>
-<!-- XAG Konfigurator v0.7.4 | 2026-10-13 | _personal/xyger/ansauggummi/konfigurator.html -->
+<!-- XAG Konfigurator v0.7.5 | 2026-10-13 | _personal/xyger/ansauggummi/konfigurator.html -->
 <style>
   :root{
     --bg:#f4f5f7; --card:#ffffff; --ink:#1b1f24; --muted:#6b7280; --line:#e2e5ea;
@@ -561,6 +561,8 @@ const NFK=["nf0","nf1","nf2","nf3"];
 // Anfragetext immer Deutsch (Michael liest ihn), unabhängig von der Oberflächensprache. Komma als Dezimaltrenner.
 const td=k=>T.de[k]??k, fd=v=>String(Math.round(v*10)/10).replace(".",",");
 function sideTxt(X){ return `Ø ${fd(X.d)}, ${td("sumLen")} ${fd(X.len)}, ${td("sumNut")} ${td(NFK[X.nf])}`+(X.nf?` ${X.nn}x, ${td("sumPos")} ${fd(X.np)}, ${td("sumW")} ${fd(X.nw)}, ${td(X.nf===3?"ndH":"sumD")} ${fd(X.nd)}`+(X.nn===2?`, ${td("ng")} ${fd(X.ng)}`:""):""); }
+function code(){ const f=v=>String(Math.round(v*10)/10).replace(".",","); const n=X=>X.nf?`${X.nn}${["","h","e","w"][X.nf]}${f(X.np)}`:"0";
+  return `XAG ${f(S.A.d)}/${f(S.A.len)}/${n(S.A)} | ${f(S.B.d)}/${f(S.B.len)}/${n(S.B)} | S${f(S.gap)} L${f(total())} | ${f(angle())}° | ${S.hard?"H":"W"} | ${S.clamp?"B":"S"} | D${f(S.bore)}${S.shape?"hz":"r"} | ${LANG}`; }
 function v(id){ return document.getElementById(id).value.trim(); }
 function summary(){ return [
   `${td("sumH")}: ${(S.carb.m==="?"?td("other"):[S.carb.m,S.carb.r,S.carb.s||""].filter(Boolean).join(" "))} ↔ ${(S.st.m==="?"?td("other"):[S.st.m,S.st.v].filter(Boolean).join(" "))}`,
@@ -569,8 +571,7 @@ function summary(){ return [
   `${td("sumGap")} ${fd(S.gap)} mm, ${td("total")} ${fd(total())} mm, ${td("sumAng")} ${fd(angle())}°, ${td(S.hard?"hardV":"soft")}, ${td("sumClamp")} ${td(S.clamp?"wide":"narrow")}, ${td("bore")} ${fd(S.bore)} ${td(S.shape?"heart":"round")}`,
   `Code: ${code()}`,
   `STL: ${S.wantStl? td("yes") : td("no")} | ${td("clamps")}: ${S.clamps? "2" : td("no")}`,
-  `${td("sumName")}: ${v("name")} | ${td("sumBike")}: ${v("bike")}${v("note")?" | "+td("sumNote")+": "+v("note"):""}` ].join("
-"); }
+  `${td("sumName")}: ${v("name")} | ${td("sumBike")}: ${v("bike")}${v("note")?" | "+td("sumNote")+": "+v("note"):""}` ].join("\n"); }
 
 // ---------- Render ----------
 const chips=(id,items,sel,label)=>{ document.getElementById(id).innerHTML=items.map(x=>`<button class="chip" data-v="${x}" aria-pressed="${String(x)===String(sel)}">${label(x)}</button>`).join(""); };
