@@ -2,10 +2,12 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-vqtqIE8m0AmHE7gGYhlXQCHcK/S3OGBuRxrber+UMFo='; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'none'">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
 <title>Impressum</title>
-<!-- XAG Impressum v0.1.2 | 2026-10-15 | _personal/xyger/ansauggummi/impressum.html
+<!-- XAG Impressum v0.1.3 | 2026-10-15 | _personal/xyger/ansauggummi/impressum.html
      Pflichtangaben werden per JavaScript aus kodierten Teilen zusammengesetzt (nicht im Klartext im Quelltext, kein Suchmaschinen-Index). -->
 <style>
   :root{--bg:#f4f5f7;--card:#fff;--ink:#1b1f24;--muted:#6b7280;--line:#e2e5ea;--accent:#0f766e}
@@ -58,7 +60,7 @@ function show(l){ const t=T[l]; document.documentElement.lang=l; try{ localStora
     <h3>${t.conf}</h3><p>${t.confT}</p><h3>${t.wa}</h3><p>${t.waT}</p><h3>${t.rights}</h3><p>${t.rightsT}</p>`;
   document.getElementById("back").textContent=t.back; }
 document.getElementById("lang").addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) show(b.dataset.l); });
-let l="de"; try{ l=localStorage.getItem("xag_lang")||l; }catch(e){} if(!T[l]) l=(navigator.language||"de").slice(0,2); if(!T[l]) l="de"; show(l);
+let l="de"; try{ l=localStorage.getItem("xag_lang")||l; }catch(e){} if(!T[l]) l=(navigator.language||"en").slice(0,2); if(!T[l]) l="en"; show(l);   // FR/ES u. a.: Englisch
 </script>
 </body>
 </html>
