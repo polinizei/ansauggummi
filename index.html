@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-l+T1MfnZsKEYd0gBcOxUXVGedtwf+xFLi9V3k8qSGuo='; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-UupdsbrZVWJIPcmWGEEK41adJWaa978EC0gmVSyexK8='; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="index, follow">
@@ -13,7 +13,7 @@
 <meta property="og:description" content="Verbindungsgummi nach Maß aus TPU für SmartCarb, Mikuni, Keihin, Lectron und Dellorto. Gerade, gewinkelt, dick auf dünn. Online konfigurieren mit 3D-Vorschau."><meta property="og:image" content="https://polinizei.github.io/ansauggummi/og.png"><meta property="og:locale" content="de_DE">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "Service", "name": "Verbindungsgummi nach Maß", "serviceType": "3D-gedruckter Vergaser-Verbindungsgummi aus TPU", "provider": {"@type": "Organization", "name": "Xyger Rennsport"}, "areaServed": "Europe", "url": "https://polinizei.github.io/ansauggummi/", "description": "Verbindungsgummi nach Maß aus TPU für SmartCarb, Mikuni, Keihin, Lectron und Dellorto. Gerade, gewinkelt, dick auf dünn. Online konfigurieren mit 3D-Vorschau.", "audience": {"@type": "Audience", "audienceType": "Zweitakt- und Vespa-Tuning"}}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Was ist ein Verbindungsgummi?", "acceptedAnswer": {"@type": "Answer", "text": "Auch Vergasergummi oder Ansaugmanschette genannt. Er verbindet den Vergaser mit dem Ansaugstutzen des Motors und dichtet gegen Nebenluft ab."}}, {"@type": "Question", "name": "Warum TPU statt Gummi?", "acceptedAnswer": {"@type": "Answer", "text": "TPU ist flexibel, kraftstoffbeständig und lässt sich exakt nach deinen Maßen drucken, auch mit Winkel und Übergang von dick auf dünn."}}, {"@type": "Question", "name": "Passt das für SmartCarb auf Quattrini M200S?", "acceptedAnswer": {"@type": "Answer", "text": "Ja, diese Paarung ist im Konfigurator voreingestellt. Du misst nur, was abweicht."}}, {"@type": "Question", "name": "Welche Winkel sind möglich?", "acceptedAnswer": {"@type": "Answer", "text": "Gerade, 7,5°, 19° oder frei bis 40°. Größere Winkel nur mit Stützmaterial im Druck."}}, {"@type": "Question", "name": "Was brauche ich zum Messen?", "acceptedAnswer": {"@type": "Answer", "text": "Einen Messschieber. Außen-Ø, Stutzenlänge sowie Lage, Breite und Tiefe der Nut, jeweils auf 0,1 mm."}}]}]</script>
-<!-- XAG Konfigurator v0.9.2 | 2026-10-15 | _personal/xyger/ansauggummi/konfigurator.html -->
+<!-- XAG Konfigurator v0.9.3 | 2026-10-15 | _personal/xyger/ansauggummi/konfigurator.html -->
 <style>
   :root{
     --bg:#f4f5f7; --card:#ffffff; --ink:#1b1f24; --muted:#6b7280; --line:#e2e5ea;
@@ -639,12 +639,12 @@ function meshOf(A,B,N,st){ // Rotationskörper aus dem Längsschnitt, Biegung in
 // ---------- 3D-Vorschau (Canvas, Painter-Sortierung, flächige Schattierung) ----------
 const V3={yaw:-0.6, pitch:0.5, zoom:1, px:0, py:0, mesh:null, key:"", mode:"none", auto:true, last:0};
 const REDUCED=matchMedia("(prefers-reduced-motion: reduce)").matches;
-const Q3D=144;   // Segmente am Umfang in der großen Vorschau
+const Q3D=72;    // Segmente am Umfang in der großen Vorschau (72 = flüssig, die Druck-STL hat 360)
 function draw3d(){
   const cv=document.getElementById("c3d"), ctx=cv.getContext("2d");
-  { const cw=Math.round((cv.getBoundingClientRect().width||360)*Math.min(devicePixelRatio||1,2)); if(cw>40 && Math.abs(cv.width-cw)>2){ cv.width=cw; cv.height=Math.round(cw/1.5); } }   // Zeichenfläche in echter Bildschirmauflösung
-  const W=cv.width, H=cv.height, NSEG=V3.mode==="stamp"?72:Q3D;
-  const k=JSON.stringify([S.A,S.B,S.gap,angle(),S.hard,S.clamp,S.boreA,S.boreB,S.boreEq,NSEG]); if(V3.key!==k){ V3.mesh=meshOf(S.A,S.B,NSEG,0.5); V3.key=k; }
+  { const cw=Math.round((cv.getBoundingClientRect().width||360)*Math.min(devicePixelRatio||1,1.25)); if(cw>40 && Math.abs(cv.width-cw)>2){ cv.width=cw; cv.height=Math.round(cw/1.5); } }   // Zeichenfläche in echter Bildschirmauflösung
+  const W=cv.width, H=cv.height, NSEG=V3.mode==="stamp"?48:Q3D;
+  const k=JSON.stringify([S.A,S.B,S.gap,angle(),S.hard,S.clamp,S.boreA,S.boreB,S.boreEq,NSEG]); if(V3.key!==k){ V3.mesh=meshOf(S.A,S.B,NSEG,1); V3.key=k; }
   const T=V3.mesh.tris, n=V3.mesh.count;
   const cy=Math.cos(V3.yaw), sy=Math.sin(V3.yaw), cp=Math.cos(V3.pitch), sp=Math.sin(V3.pitch);
   let minZ=1e9,maxZ=-1e9; for(let i=2;i<T.length;i+=3){ if(T[i]<minZ)minZ=T[i]; if(T[i]>maxZ)maxZ=T[i]; } const zc=(minZ+maxZ)/2;
@@ -749,13 +749,14 @@ function render(){
   { const li=document.getElementById("linkInfo"); li.hidden=!S.fromLink; if(S.fromLink) li.textContent=t("fromLink")+" ("+S.fromLink.toUpperCase()+")"; }
   document.querySelectorAll("[data-seo]").forEach(el=>{ el.hidden = S.step!==0 || el.dataset.seo!==(LANG==="de"?"de":"en"); });
   if(S.step===0) renderStep0();
-  const mode = S.step===0 ? "start" : S.step===4 ? "duo" : S.step===5 ? "none" : (S.big3d ? "big" : "stamp");
+  const mode = S.step===0||S.step===4 ? "duo" : S.step===5 ? "none" : (S.big3d ? "big" : "stamp");
   if(mode!==V3.mode && (mode==="stamp"||mode==="start")) Object.assign(V3,{zoom:1,px:0,py:0,auto:true});
   V3.mode=mode; const pv=document.getElementById("preview"); pv.hidden = mode==="none"; pv.className="preview m-"+mode;
   document.getElementById("c3dClose").hidden = mode!=="big"; const cv3=document.getElementById("c3d"); cv3.title = mode==="stamp" ? "" : t("v3hint");
-  ["sk1","sk3","sk4"].forEach(id=>{ const on=mode!=="big" && ((id==="sk1"&&(S.step===1||S.step===2))||(id==="sk3"&&S.step===3)||(id==="sk4"&&S.step===4)); const el=document.getElementById(id); if(on) el.removeAttribute("hidden"); else el.setAttribute("hidden",""); });
+  ["sk1","sk3","sk4"].forEach(id=>{ const on=mode!=="big" && ((id==="sk1"&&(S.step===1||S.step===2))||(id==="sk3"&&S.step===3)||(id==="sk4"&&(S.step===0||S.step===4))); const el=document.getElementById(id); if(on) el.removeAttribute("hidden"); else el.setAttribute("hidden",""); });
   if(S.step===1||S.step===2) drawSide(document.getElementById("sk1"), X, t(onB?"motor":"carb"), onB?"manifold":"carb");
   if(S.step===3) drawInstall(document.getElementById("sk3"));
+  if(S.step===0) drawGummi(document.getElementById("sk4"));   // Vorlage: 2D-Längsschnitt neben 3D
   if(S.step===4){ drawGummi(document.getElementById("sk4")); const bi=document.getElementById("boreInfo"); bi.textContent = S.shape===1 ? t("boreHeart") : (S.carb.m==="SmartCarb" ? t("boreSC") : ""); bi.hidden = !bi.textContent; }
   if(S.step===5){ document.getElementById("summary").textContent=summary(); document.getElementById("linkOut").value=shareLink(); }
   if(mode!=="none") draw3d();
