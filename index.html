@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-0rFAeMIy1a5WbD0KZWKS9PHFKpw+yklD69r/9OklsCM='; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-tGIbMOnUC6+7hcDPnS7fxrFcW4LdCXSMPDwplICnOkc='; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="index, follow">
@@ -13,7 +13,7 @@
 <meta property="og:description" content="Online-Konfigurator für Verbindungsgummi nach Maß aus TPU: SmartCarb, Mikuni, Keihin, Lectron, Dellorto. Gerade, gewinkelt, dick auf dünn, mit 3D-Vorschau."><meta property="og:image" content="https://polinizei.github.io/ansauggummi/og.png"><meta property="og:locale" content="de_DE">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "Service", "name": "Verbindungsgummi nach Maß, Online-Konfigurator", "serviceType": "3D-gedruckter Vergaser-Verbindungsgummi aus TPU", "provider": {"@type": "Organization", "name": "Xyger Rennsport"}, "areaServed": "Europe", "url": "https://polinizei.github.io/ansauggummi/", "description": "Online-Konfigurator für Verbindungsgummi nach Maß aus TPU: SmartCarb, Mikuni, Keihin, Lectron, Dellorto. Gerade, gewinkelt, dick auf dünn, mit 3D-Vorschau.", "audience": {"@type": "Audience", "audienceType": "Zweitakt- und Vespa-Tuning"}}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Was ist ein Verbindungsgummi?", "acceptedAnswer": {"@type": "Answer", "text": "Auch Vergasergummi oder Ansaugmanschette genannt. Er verbindet den Vergaser mit dem Ansaugstutzen des Motors und dichtet gegen Nebenluft ab."}}, {"@type": "Question", "name": "Warum TPU statt Gummi?", "acceptedAnswer": {"@type": "Answer", "text": "TPU ist flexibel, kraftstoffbeständig und lässt sich exakt nach deinen Maßen drucken, auch mit Winkel und Übergang von dick auf dünn."}}, {"@type": "Question", "name": "Passt das für SmartCarb auf Quattrini M200S?", "acceptedAnswer": {"@type": "Answer", "text": "Ja, diese Paarung ist im Konfigurator voreingestellt. Du misst nur, was abweicht."}}, {"@type": "Question", "name": "Welche Winkel sind möglich?", "acceptedAnswer": {"@type": "Answer", "text": "Gerade, 7,5°, 19° oder frei bis 40°. Größere Winkel nur mit Stützmaterial im Druck."}}, {"@type": "Question", "name": "Was brauche ich zum Messen?", "acceptedAnswer": {"@type": "Answer", "text": "Einen Messschieber. Außen-Ø, Stutzenlänge sowie Lage, Breite und Tiefe der Nut, jeweils auf 0,1 mm."}}]}]</script>
-<!-- XAG Konfigurator v0.11.2 | 2026-10-16 | _personal/xyger/ansauggummi/konfigurator.html -->
+<!-- XAG Konfigurator v0.13.1 | 2026-10-16 | _personal/xyger/ansauggummi/konfigurator.html -->
 <style>
   :root{
     --bg:#f4f5f7; --card:#ffffff; --ink:#1b1f24; --muted:#6b7280; --line:#e2e5ea;
@@ -217,7 +217,7 @@
     <p class="sub" data-i="s3p"></p>
     <div class="row"><label><span data-i="gap"></span><small data-i="gapS"></small></label><div class="step" data-k="gap" data-s="0.5"><button>−</button><input class="val" type="text" inputmode="decimal"><button>+</button></div></div>
     <div class="row" id="gapAutoRow" hidden><label><span data-i="gapAuto"></span><small data-i="gapAutoS"></small></label><div class="chips" data-k="gapAuto"><button class="chip" data-v="1" data-i="yes"></button><button class="chip" data-v="0" data-i="no"></button></div></div>
-    <div class="row"><label data-i="ang"></label><div class="chips" data-k="ang"><button class="chip" data-v="0" data-i="straight"></button><button class="chip" data-v="7.5">7,5°</button><button class="chip" data-v="19">19°</button><button class="chip" data-v="free" data-i="free"></button></div></div>
+    <div class="row"><label data-i="ang"></label><div class="chips" data-k="ang"><button class="chip" data-v="0" data-i="straight"></button><button class="chip" data-v="7.5">7,5°</button><button class="chip" data-v="15">15°</button><button class="chip" data-v="19">19°</button><button class="chip" data-v="free" data-i="free"></button></div></div>
     <div class="row" id="angFreeRow" hidden><label data-i="angFree"></label><div class="step" data-k="angFree" data-s="0.5"><button>−</button><input class="val" type="text" inputmode="decimal"><button>+</button></div></div>
   </section>
 
@@ -271,6 +271,7 @@ const FAB = { oversize:0.2,      // Druck-Übermaß auf den Stutzen-Ø (nur Druc
   lipH:0.3,                      // Dichtlippe: Höhe, flaches Kreissegment, höchstens Nuttiefe - 0,1 (Xyger 2026-10-16: lieber Spiel als stramm)
   lipInset:0.1,                  // Lippe je Seite schmaler als die Nut
   wulstPlay:0.2,                 // Spiel der Wulst-Nut im Gummi (Tiefe), Breite + 0,1 je Seite zusätzlich
+  wulstFlank:30,                 // Wulst-Nut: Flanken beidseitig flach, Winkel zur Achse in Grad (Xyger 2026-10-16, Skizze 1)
   boreDelta:0 };                 // Zuschlag auf den Durchlass-Ø (Werkstatt)
 const WALL = FAB.wall, CLAMP = FAB.clamp, LIP = { get w(){ return FAB.lipW; }, get h(){ return FAB.clampDepth; } };
 const printSides = S => [{...S.A, d:S.A.d+FAB.oversize}, {...S.B, d:S.B.d+FAB.oversize}];   // Stutzen mit Druck-Übermaß
@@ -370,7 +371,7 @@ function linkParse(h, S){ const q={}; String(h||"").replace(/^#/,"").split("&").
   const side=(str,X)=>{ const a=String(str||"").split(","); if(a.length<8) return; ["d","len","nf","nn","np","nw","nd","ng"].forEach((k,i)=>{
       X[k] = k==="nf" ? Math.min(4,Math.max(0,parseInt(a[i])||0)) : k==="nn" ? (parseInt(a[i])===2?2:1) : num(a[i],k,X[k]); }); };
   side(q.a,S.A); side(q.b,S.B); S.gap=num(q.g,"gap",S.gap);
-  if(q.w && q.w[0]==="f"){ S.ang="free"; S.angFree=num(q.w.slice(1),"angFree",S.angFree); } else if(["0","7.5","19"].includes(q.w)) S.ang=q.w;
+  if(q.w && q.w[0]==="f"){ S.ang="free"; S.angFree=num(q.w.slice(1),"angFree",S.angFree); } else if(["0","7.5","15","19"].includes(q.w)) S.ang=q.w;
   if(["0","1","2"].includes(q.h)) S.hard=+q.h; if(["0","1"].includes(q.k)) S.clamp=+q.k;
   const d=String(q.d||"").split(","); if(d.length>=5){ S.boreA=num(d[0],"boreA",S.boreA); S.boreB=num(d[1],"boreB",S.boreB); S.boreEq=d[2]==="1"?1:0; S.boreAuto=d[3]==="1"; S.shape=0; }
   const x=String(q.x||"").split(","); if(x.length>=2){ S.wantStl=x[0]==="1"?1:0; S.clamps=x[1]==="0"?0:2; }
@@ -406,7 +407,7 @@ function spigotPoly(X){ const t=spigotTop(X); return [...t, ...t.slice().reverse
 function lipPts(X, r, zOf){
   const h=Math.max(0,Math.min(FAB.lipH, X.nd-0.1)), e=FAB.lipInset, wp=FAB.wulstPlay, segs=[];
   for(const c of nutPositions(X)){ const a=c-X.nw/2, b=c+X.nw/2, seg=[];
-    if(X.nf===3){ const g=X.nd+wp, o=wp+0.1; seg.push([a-o,r],[a-o,r+g],[b+o,r+g],[b+o,r]); }   // Wulst: Nut im Gummi mit Spiel
+    if(X.nf===3){ const g=X.nd+wp, o=wp+0.1, run=g/Math.tan(FAB.wulstFlank*Math.PI/180); seg.push([a-o-run,r],[a-o,r+g],[b+o,r+g],[b+o+run,r]); }   // Wulst: Nut im Gummi mit Spiel
     else { const w=X.nw-2*e, Rc=(w*w/4+h*h)/(2*h||1);                                   // Kreissegment über Sehne w mit Höhe h
       for(let t=0;t<=8;t++){ const x=w*t/8-w/2; seg.push([a+e+w*t/8, r-(h>0 ? Math.sqrt(Math.max(0,Rc*Rc-x*x))-(Rc-h) : 0)]); } }
     let zs=seg.map(([cc,rr])=>[zOf(cc),rr]); if(zs.length>1 && zs[0][0]>zs[zs.length-1][0]) zs=zs.reverse(); segs.push(zs); }
@@ -423,7 +424,12 @@ function fix45(pts, sgn, zBend, aDeg, zMax){
   for(let i=1;i<pts.length;i++){ let [z,r]=pts[i]; const [pz,pr]=out[out.length-1]; if(z<pz) z=pz;
     const k = z>zBend+1e-9 ? kB : 1, rise=sgn*(r-pr); if(rise>(z-pz)*k+1e-9) z=pz+rise/k; out.push([Math.min(z,zMax),r]); }
   return out; }
-function gummi(Ain, Bin){
+// Zwei Modelle aus denselben Maßen: "nom" = online, innen exakt wie gemessen (Gegenstück zum Stutzen, Stufen 90°),
+// "print" = Druckvorbereitung (Lippe, Wulst-Spiel, Fase, 45° innen). Außen (Schellennuten 45°), Länge und Biegezone sind in beiden gleich.
+let GEOM_MODE="nom";
+function nomPts(X, zOf){ const t=spigotTop(X).slice(1,-1).map(([c,r])=>[zOf(c),r]); return t.length>1 && t[0][0]>t[t.length-1][0] ? t.reverse() : t; }
+function gummi(Ain, Bin, mode){
+  const pr=(mode||GEOM_MODE)==="print";
   const w=WALL[S.hard], A=Ain||S.A, B=Bin||S.B, rA=A.d/2, rB=B.d/2, tA=A.len, tB=B.len, L=total(), a=angle();
   autoBore(A,B);
   const rSA=Math.min(S.boreA+FAB.boreDelta, A.d-1)/2, rSB=Math.min((S.boreEq?S.boreA:S.boreB)+FAB.boreDelta, B.d-1)/2;
@@ -435,7 +441,8 @@ function gummi(Ain, Bin){
   let z1=Math.max(LIP.w+2*h+cw, bA), z2=Math.min(L-E-cw-h, bB); if(z2<z1) z1=z2=(z1+z2)/2;
   // Schellennut außen: Breite = Schellenbreite am Nutgrund, beginnt nach dem Endwulst
   const outer=fix45([[0,RLA],[LIP.w,RLA],[LIP.w+h,RA],[LIP.w+h+cw,RA],[LIP.w+2*h+cw,RLA],[z1,RLA],[z2,RLB],[L-E-cw-h,RLB],[L-E-cw,RB],[L-E,RB],[L-E,RLB],[L,RLB]], +1, bA, a, L);
-  const inner=fix45([[0,rA+FAB.fase],[FAB.fase,rA],...lipPts(A,rA,c=>tA-c),[tA,rA],[tA,rSA],[L-tB,rSB],[L-tB,rB],...lipPts(B,rB,c=>L-tB+c),[L-FAB.fase,rB],[L,rB+FAB.fase]], -1, bA, a, L);
+  const inner = pr ? fix45([[0,rA+FAB.fase],[FAB.fase,rA],...lipPts(A,rA,c=>tA-c),[tA,rA],[tA,rSA],[L-tB,rSB],[L-tB,rB],...lipPts(B,rB,c=>L-tB+c),[L-FAB.fase,rB],[L,rB+FAB.fase]], -1, bA, a, L)
+    : [[0,rA],...nomPts(A,c=>tA-c),[tA,rA],[tA,rSA],[L-tB,rSB],[L-tB,rB],...nomPts(B,c=>L-tB+c),[L,rB]];   // Nennmodell: Stufen 90°, keine Fase
   return {pts:[...outer,...inner.reverse()], RL:Math.max(RLA,RLB), RLA, RLB, rA, rB, rSA, rSB, tA, tB, L, bA, bB, cA, cB, cw};
 }
 // Auto-Länge: kürzester Abstand, bei dem auf der Bogen-Innenseite außen zwischen den Schellenbereichen MIN_OUT und innen in der Bohrung zwischen den Stutzenenden MIN_IN bleiben
@@ -444,8 +451,8 @@ function gapOk(P,a){ const Ls=P.bB-P.bA;
   const out=(P.bA-P.cA)+(Ls-P.RL*a)+(P.cB-P.bB), bore=(P.bA-P.tA)+(Ls-Math.max(P.rSA,P.rSB)*a)+((P.L-P.tB)-P.bB);
   return out>=MIN_OUT-1e-9 && bore>=MIN_IN-1e-9; }
 function minGap(){ const g0=S.gap, a=angle()*Math.PI/180; let lo=0, hi=LIM.gap[1];
-  S.gap=hi; if(!gapOk(gummi(),a)){ S.gap=g0; return hi; }
-  for(let i=0;i<24;i++){ const m=(lo+hi)/2; S.gap=m; if(gapOk(gummi(),a)) hi=m; else lo=m; }
+  S.gap=hi; if(!gapOk(gummi(undefined,undefined,"print"),a)){ S.gap=g0; return hi; }   // Länge immer aus dem Druckmodell
+  for(let i=0;i<24;i++){ const m=(lo+hi)/2; S.gap=m; if(gapOk(gummi(undefined,undefined,"print"),a)) hi=m; else lo=m; }
   S.gap=g0; return Math.ceil(hi*10-1e-6)/10; }
 // Abstand anwenden: Automatik (nur gewinkelt) setzt das Minimum, sonst nie darunter
 function applyGap(){ const m=minGap(); if(S.gapAuto && angle()>0) S.gap=m; else if(S.gap<m) S.gap=m; return m; }
@@ -635,6 +642,9 @@ function drawInstall(svg){
   let s=DEFS;
   for(const [pts,st] of polysA) s+=`<polygon points="${P2(M,pts)}" ${st}/>`;
   for(const [pts,st] of polysB) s+=`<polygon points="${P2(M,pts)}" ${st}/>`;
+  // Zusatzlinien wie in Schritt 2/3 (Bruchkanten, Membran, Schrauben): Vergaser gespiegelt, Motorseite um die Spaltmitte mitgedreht
+  s+=OA.extra({X:z=>M.X(-z), Y:M.Y, sc:M.sc});
+  s+=`<g transform="rotate(${angle()} ${M.X(g/2)} ${M.Y(0)})">`+OB.extra({X:z=>M.X(g+z), Y:M.Y, sc:M.sc})+`</g>`;
   s+=`<polygon points="${P2(M,spA)}" ${SOLID}/><polygon points="${P2(M,spB)}" ${SOLID}/>`;
   s+=axis(M,[[-OA.bbox[1][0],0],[0,0]])+axis(M,[rot([g,0]),rot([g+OB.bbox[1][0],0])]);
   s+=txt(8,14,t("carb"),"start","var(--muted)")+txt(352,14,t("motor"),"end","var(--muted)");
@@ -668,12 +678,15 @@ function drawGummi(svg){
 
 // ---------- Mesh (3D-Vorschau; die Druck-STL entsteht lokal mit _ops/xag-stl.js aus denselben Blöcken) ----------
 // @@GEOM
-function meshOf(A,B,N,st){ // Rotationskörper aus dem Längsschnitt, Biegung in der Y-Z-Ebene, Achse Z, Vergaserseite z=0. Liefert Float32-Dreiecke (9 Werte je Dreieck)
+function meshOf(A,B,N,st,mark){ // Rotationskörper aus dem Längsschnitt, Biegung in der Y-Z-Ebene, Achse Z, Vergaserseite z=0. Liefert Float32-Dreiecke (9 Werte je Dreieck)
+  // mark (nur Druck-STL): {z0,z1,st,rMin,depth(z,th,r)} prägt die Außenfläche zwischen z0 und z1 radial nach innen
   N=N||120; const P=gummi(A,B), Bd=bender(P,angle());
-  const prof=subdiv(P.pts,st,[P.bA,P.bB]).filter((pt,i,arr)=>{ const q=arr[(i+1)%arr.length]; return Math.abs(pt[0]-q[0])>1e-6||Math.abs(pt[1]-q[1])>1e-6; });
+  let pts=subdiv(P.pts,st,[P.bA,P.bB]); if(mark){ const q=[]; for(let i=0;i<pts.length;i++){ const [z1,r1]=pts[i],[z2,r2]=pts[(i+1)%pts.length]; q.push([z1,r1]);
+      if(r1>mark.rMin && r2>mark.rMin && Math.max(z1,z2)>mark.z0 && Math.min(z1,z2)<mark.z1){ const n=Math.ceil(Math.abs(z2-z1)/mark.st); for(let k=1;k<n;k++) q.push([z1+(z2-z1)*k/n, r1+(r2-r1)*k/n]); } } pts=q; }
+  const prof=pts.filter((pt,i,arr)=>{ const q=arr[(i+1)%arr.length]; return Math.abs(pt[0]-q[0])>1e-6||Math.abs(pt[1]-q[1])>1e-6; });
   const n=prof.length, V=new Float64Array(n*N*3);
-  for(let i=0;i<n;i++){ const [z,r]=prof[i];
-    for(let k=0;k<N;k++){ const th=2*Math.PI*k/N, x=r*Math.cos(th), y=r*Math.sin(th); const [z2,y2]=Bd(z,y); const o=(i*N+k)*3; V[o]=x; V[o+1]=y2; V[o+2]=z2; } }
+  for(let i=0;i<n;i++){ const [z,r0]=prof[i];
+    for(let k=0;k<N;k++){ const th=2*Math.PI*k/N, r = mark && r0>mark.rMin ? r0-mark.depth(z,th,r0) : r0, x=r*Math.cos(th), y=r*Math.sin(th); const [z2,y2]=Bd(z,y); const o=(i*N+k)*3; V[o]=x; V[o+1]=y2; V[o+2]=z2; } }
   const tris=[]; const idx=(i,k)=>((i%n)*N+(k%N))*3;
   for(let i=0;i<n;i++) for(let k=0;k<N;k++){ const a=idx(i,k), b=idx(i+1,k), c=idx(i+1,k+1), d=idx(i,k+1); tris.push(a,b,c, a,c,d); }
   // Orientierung: Volumen über Divergenz, bei negativem Volumen alle Dreiecke umdrehen
